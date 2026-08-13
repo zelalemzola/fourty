@@ -410,31 +410,48 @@ export default function SettingsPage() {
       />
 
       <Tabs defaultValue="profile" className="gap-4">
-        <TabsList
-          variant="line"
-          className="h-auto w-full flex-wrap justify-start gap-1"
-        >
-          <TabsTrigger value="profile">
-            <User /> Profile
-          </TabsTrigger>
-          <TabsTrigger value="security">
-            <Shield /> Security
-          </TabsTrigger>
-          <TabsTrigger value="notifications">
-            <BellRing /> Notifications
-          </TabsTrigger>
-          <TabsTrigger value="appearance">
-            <Palette /> Appearance
-          </TabsTrigger>
-          {isOwner && (
-            <TabsTrigger value="organization">
-              <Building2 /> Organization
+        <div className="-mx-1 overflow-x-auto overscroll-x-contain pb-1.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0">
+          <TabsList
+            variant="line"
+            className="h-auto min-h-10 w-max max-w-none flex-nowrap justify-start gap-0.5 px-1 sm:w-full sm:max-w-full sm:gap-1"
+          >
+            <TabsTrigger value="profile" className="min-h-9 shrink-0 px-2.5 sm:px-3">
+              <User />
+              <span>Profile</span>
             </TabsTrigger>
-          )}
-          <TabsTrigger value="about">
-            <Info /> About
-          </TabsTrigger>
-        </TabsList>
+            <TabsTrigger value="security" className="min-h-9 shrink-0 px-2.5 sm:px-3">
+              <Shield />
+              <span>Security</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="notifications"
+              className="min-h-9 shrink-0 px-2.5 sm:px-3"
+            >
+              <BellRing />
+              <span>Notifications</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="appearance"
+              className="min-h-9 shrink-0 px-2.5 sm:px-3"
+            >
+              <Palette />
+              <span>Appearance</span>
+            </TabsTrigger>
+            {isOwner && (
+              <TabsTrigger
+                value="organization"
+                className="min-h-9 shrink-0 px-2.5 sm:px-3"
+              >
+                <Building2 />
+                <span>Organization</span>
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="about" className="min-h-9 shrink-0 px-2.5 sm:px-3">
+              <Info />
+              <span>About</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="profile" className="space-y-4">
           <SectionCard
