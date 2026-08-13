@@ -2,17 +2,34 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { BellRing } from "lucide-react";
+import { BellRing, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { isPushSupported, subscribeToPush } from "@/lib/push-client";
+import {
+  getPushSupport,
+  isPushSupported,
+  subscribeToPush,
+  type PushSupport,
+} from "@/lib/push-client";
 
 export function PushPermissionBanner() {
+  const [support, setSupport] = useState<PushSupport | null>(null);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isPushSupported()) return;
-    if (Notification.permission === "default") setVisible(true);
+    const next = getPushSupport();
+    setSupport(next);
+
+    if (next.supported) {
+      if (Notification.permission === "default") setVisible(true);
+      return;
+    }
+
+    // Guide iPhone/iPad users who opened the site in Safari (push only works as Home Screen app).
+    if (next.reason === "ios_needs_homescreen") {
+      const dismissed = sessionStorage.getItem("fourty-ios-push-hint");
+      if (!dismissed) setVisible(true);
+    }
   }, []);
 
   async function enablePush() {
@@ -34,7 +51,36 @@ export function PushPermissionBanner() {
     }
   }
 
-  if (!visible) return null;
+  function dismissIosHint() {
+    sessionStorage.setItem("fourty-ios-push-hint", "1");
+    setVisible(false);
+  }
+
+  if (!visible || !support) return null;
+
+  if (support.reason === "ios_needs_homescreen") {
+    return (
+      <div className="panel mb-4 flex flex-col gap-3 p-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="rounded-md border border-border bg-muted p-2 text-muted-foreground">
+            <Share className="size-4" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Install Fourty for push alerts</p>
+            <p className="text-xs text-muted-foreground">
+              On iPhone/iPad, tap Share → Add to Home Screen, then open Fourty
+              from the new icon. Safari tabs cannot receive web push.
+            </p>
+          </div>
+        </div>
+        <Button variant="ghost" size="sm" onClick={dismissIosHint}>
+          Got it
+        </Button>
+      </div>
+    );
+  }
+
+  if (!isPushSupported()) return null;
 
   return (
     <div className="panel mb-4 flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">

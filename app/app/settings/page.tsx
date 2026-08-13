@@ -62,11 +62,12 @@ import {
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
+  getPushSupport,
   hasLocalPushSubscription,
-  isPushSupported,
   sendTestPush,
   subscribeToPush,
   unsubscribeFromPush,
+  type PushSupport,
 } from "@/lib/push-client";
 
 function rtkError(err: unknown, fallback: string) {
@@ -171,6 +172,7 @@ export default function SettingsPage() {
   const [pushPermission, setPushPermission] = useState<
     NotificationPermission | "unsupported"
   >("default");
+  const [pushSupport, setPushSupport] = useState<PushSupport | null>(null);
   const [localSubscribed, setLocalSubscribed] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
   const [testPushLoading, setTestPushLoading] = useState(false);
@@ -188,7 +190,9 @@ export default function SettingsPage() {
   }, [orgSettings]);
 
   async function refreshPushState() {
-    if (!isPushSupported()) {
+    const support = getPushSupport();
+    setPushSupport(support);
+    if (!support.supported) {
       setPushPermission("unsupported");
       setLocalSubscribed(false);
       return;
@@ -605,7 +609,11 @@ export default function SettingsPage() {
               <p className="text-sm text-muted-foreground">
                 Status:{" "}
                 {pushPermission === "unsupported"
-                  ? "Not supported"
+                  ? pushSupport?.reason === "ios_needs_homescreen"
+                    ? "Needs Home Screen install"
+                    : pushSupport?.reason === "in_app_browser"
+                      ? "Open in Chrome/Safari"
+                      : "Not supported on this browser"
                   : pushPermission === "denied"
                     ? "Blocked in browser"
                     : pushReady
@@ -651,6 +659,19 @@ export default function SettingsPage() {
                 )}
               </div>
             </div>
+            {pushPermission === "unsupported" && pushSupport?.message && (
+              <div className="space-y-2 rounded-xl border border-border/60 bg-muted/40 px-3 py-2.5 text-xs text-muted-foreground">
+                <p>{pushSupport.message}</p>
+                {pushSupport.reason === "ios_needs_homescreen" && (
+                  <ol className="list-decimal space-y-1 pl-4">
+                    <li>Open this site in Safari (not Chrome on iOS).</li>
+                    <li>Tap Share → Add to Home Screen.</li>
+                    <li>Open Fourty from the new Home Screen icon.</li>
+                    <li>Return here and tap Enable alerts.</li>
+                  </ol>
+                )}
+              </div>
+            )}
             {pushPermission === "denied" && (
               <p className="text-xs text-amber-700 dark:text-amber-400">
                 Notifications are blocked. Allow them in your browser site

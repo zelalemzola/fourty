@@ -7,18 +7,141 @@ function urlBase64ToUint8Array(base64String: string) {
   return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
 }
 
-export function isPushSupported() {
+export type PushSupportReason =
+  | "ok"
+  | "ios_needs_homescreen"
+  | "ios_version"
+  | "in_app_browser"
+  | "missing_api"
+  | "insecure";
+
+export type PushSupport = {
+  supported: boolean;
+  reason: PushSupportReason;
+  message: string;
+  isIOS: boolean;
+  isStandalone: boolean;
+};
+
+function isIOSDevice() {
+  if (typeof window === "undefined" || typeof navigator === "undefined") {
+    return false;
+  }
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return true;
+  // iPadOS 13+ reports as Mac
   return (
-    typeof window !== "undefined" &&
-    "Notification" in window &&
-    "serviceWorker" in navigator &&
-    "PushManager" in window
+    navigator.platform === "MacIntel" &&
+    typeof navigator.maxTouchPoints === "number" &&
+    navigator.maxTouchPoints > 1
   );
 }
 
+function isStandaloneDisplay() {
+  if (typeof window === "undefined") return false;
+  const mediaStandalone = window.matchMedia("(display-mode: standalone)").matches;
+  const iosStandalone =
+    "standalone" in navigator &&
+    Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
+  return mediaStandalone || iosStandalone;
+}
+
+function isInAppBrowser() {
+  const ua = navigator.userAgent || "";
+  return /FBAN|FBAV|Instagram|Line\/|MicroMessenger|Twitter|LinkedInApp|Snapchat|Pinterest|GSA\//i.test(
+    ua
+  );
+}
+
+/** Diagnose why web push works or does not on this device/browser. */
+export function getPushSupport(): PushSupport {
+  if (typeof window === "undefined") {
+    return {
+      supported: false,
+      reason: "missing_api",
+      message: "Push is only available in the browser.",
+      isIOS: false,
+      isStandalone: false,
+    };
+  }
+
+  const isIOS = isIOSDevice();
+  const isStandalone = isStandaloneDisplay();
+  const hasAPIs =
+    "Notification" in window &&
+    "serviceWorker" in navigator &&
+    "PushManager" in window;
+
+  if (!window.isSecureContext) {
+    return {
+      supported: false,
+      reason: "insecure",
+      message: "Push requires a secure HTTPS connection.",
+      isIOS,
+      isStandalone,
+    };
+  }
+
+  // iPhone/iPad: Web Push only works from a Home Screen app (iOS 16.4+), not Safari tabs.
+  if (isIOS && !isStandalone) {
+    return {
+      supported: false,
+      reason: "ios_needs_homescreen",
+      message:
+        "On iPhone or iPad, add Fourty to your Home Screen, then open it from that icon to enable push alerts.",
+      isIOS,
+      isStandalone,
+    };
+  }
+
+  if (!hasAPIs) {
+    if (isIOS) {
+      return {
+        supported: false,
+        reason: "ios_version",
+        message:
+          "Push needs iOS 16.4 or newer. Update iOS, add Fourty to Home Screen, then open it from the icon.",
+        isIOS,
+        isStandalone,
+      };
+    }
+    if (isInAppBrowser()) {
+      return {
+        supported: false,
+        reason: "in_app_browser",
+        message:
+          "This in-app browser does not support push. Open the site in Chrome or Safari instead.",
+        isIOS,
+        isStandalone,
+      };
+    }
+    return {
+      supported: false,
+      reason: "missing_api",
+      message:
+        "This browser does not support web push. Try the latest Chrome, Edge, or Firefox.",
+      isIOS,
+      isStandalone,
+    };
+  }
+
+  return {
+    supported: true,
+    reason: "ok",
+    message: "",
+    isIOS,
+    isStandalone,
+  };
+}
+
+export function isPushSupported() {
+  return getPushSupport().supported;
+}
+
 export async function registerPushServiceWorker() {
-  if (!isPushSupported()) {
-    throw new Error("Push notifications are not supported in this browser");
+  const support = getPushSupport();
+  if (!support.supported) {
+    throw new Error(support.message || "Push notifications are not supported");
   }
   const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
   await navigator.serviceWorker.ready;
@@ -29,8 +152,13 @@ export async function subscribeToPush() {
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   if (!publicKey) {
     throw new Error(
-      "VAPID public key missing. Add NEXT_PUBLIC_VAPID_PUBLIC_KEY to .env.local"
+      "VAPID public key missing. Add NEXT_PUBLIC_VAPID_PUBLIC_KEY in Vercel env, then redeploy."
     );
+  }
+
+  const support = getPushSupport();
+  if (!support.supported) {
+    throw new Error(support.message);
   }
 
   const permission = await Notification.requestPermission();
