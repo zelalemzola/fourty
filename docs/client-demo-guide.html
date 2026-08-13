@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fourty · Client Demo Guide</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --ink: #14201a;
+      --ink-soft: #3d4f45;
+      --muted: #6b7c72;
+      --paper: #f4f7f5;
+      --paper-2: #e8eee9;
+      --panel: #ffffff;
+      --line: #d5ddd7;
+      --brand: #1b4332;
+      --brand-2: #2d6a4f;
+      --accent: #cf4232;
+      --ok: #1f7a4d;
+      --warn: #9a6b12;
+      --no: #8a3a32;
+      --partial: #7a5a18;
+      --shadow: 0 1px 0 rgba(20, 32, 26, 0.04);
+      --font: "Segoe UI", "IBM Plex Sans", system-ui, sans-serif;
+      --mono: "Cascadia Mono", "IBM Plex Mono", ui-monospace, monospace;
+      --radius: 14px;
+      --nav-w: 280px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #dfeae3 0%, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #f3e6e3 0%, transparent 45%),
+        var(--paper);
+      line-height: 1.55;
+    }
+
+    a { color: var(--brand-2); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    a:hover { color: var(--accent); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: var(--nav-w) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .toc {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 1.25rem 1rem 2rem;
+      background: rgba(255,255,255,0.82);
+      border-right: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .toc .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .mark {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(145deg, var(--brand), var(--brand-2));
+      color: #e9c46a; font-weight: 700; font-size: 1.1rem;
+      display: grid; place-items: center;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    .toc h1 {
+      font-size: 0.95rem; margin: 0; letter-spacing: -0.01em;
+    }
+    .toc p { margin: 0.15rem 0 0; font-size: 0.75rem; color: var(--muted); }
+    .toc nav { display: flex; flex-direction: column; gap: 0.15rem; }
+    .toc a {
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 0.82rem;
+      padding: 0.35rem 0.55rem;
+      border-radius: 8px;
+    }
+    .toc a:hover, .toc a.active {
+      background: var(--paper-2);
+      color: var(--brand);
+    }
+    .toc .group {
+      margin: 0.85rem 0 0.25rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-left: 0.55rem;
+    }
+
+    .main { padding: 2rem clamp(1rem, 3vw, 2.75rem) 4rem; max-width: 1100px; }
+
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 4px);
+      padding: clamp(1.25rem, 3vw, 2.25rem);
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+    .hero .eyebrow {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .hero h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.7rem, 3.5vw, 2.45rem);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--brand);
+    }
+    .hero .lede {
+      margin: 0;
+      max-width: 62ch;
+      color: var(--ink-soft);
+      font-size: 1.05rem;
+    }
+    .meta-row {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-top: 1.1rem;
+    }
+    .chip {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.78rem; font-weight: 600;
+      padding: 0.28rem 0.65rem; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--paper);
+      color: var(--ink-soft);
+    }
+
+    section.block {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem 1.4rem;
+      margin-bottom: 1.15rem;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 1rem;
+    }
+    section.block > h2 {
+      margin: 0 0 0.35rem;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      color: var(--brand);
+    }
+    section.block > .sub {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    h3 {
+      margin: 1.25rem 0 0.45rem;
+      font-size: 1.02rem;
+      color: var(--ink);
+    }
+    h4 {
+      margin: 0.9rem 0 0.35rem;
+      font-size: 0.9rem;
+      color: var(--ink-soft);
+    }
+    p { margin: 0.4rem 0 0.7rem; }
+    ul, ol { margin: 0.35rem 0 0.8rem; padding-left: 1.2rem; }
+    li { margin: 0.25rem 0; }
+    code, .path {
+      font-family: var(--mono);
+      font-size: 0.84em;
+      background: var(--paper-2);
+      padding: 0.08rem 0.35rem;
+      border-radius: 5px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      background: var(--paper);
+    }
+    .card h3 { margin-top: 0; }
+    .card .role-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--brand-2);
+      margin-bottom: 0.35rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 0.5rem 0 0.9rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.5rem 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--paper-2);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-soft);
+    }
+    tr:nth-child(even) td { background: #fafcfb; }
+    .sticky-head thead th {
+      position: sticky; top: 0; z-index: 1;
+    }
+
+    .yes { color: var(--ok); font-weight: 700; }
+    .partial { color: var(--partial); font-weight: 700; }
+    .no { color: var(--no); font-weight: 700; }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #fff;
+      white-space: nowrap;
+    }
+    .badge.ok { color: var(--ok); border-color: #b9dcc8; background: #edf8f1; }
+    .badge.part { color: var(--warn); border-color: #e6d4a4; background: #fff8e8; }
+    .badge.deny { color: var(--no); border-color: #e4bcb7; background: #fff1ef; }
+    .badge.path { font-family: var(--mono); font-weight: 600; color: var(--ink-soft); }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.55rem;
+      margin: 0.6rem 0 1rem;
+    }
+    .feature {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      background: #fff;
+      font-size: 0.86rem;
+    }
+    .feature strong { display: block; margin-bottom: 0.15rem; color: var(--brand); }
+
+    .mermaid {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.75rem;
+      margin: 0.75rem 0 1rem;
+      overflow-x: auto;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: #fff6f4;
+      padding: 0.75rem 0.9rem;
+      border-radius: 0 10px 10px 0;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+    }
+    .callout.info {
+      border-left-color: var(--brand-2);
+      background: #f0f6f2;
+    }
+
+    .kpi-strip {
+      display: flex; flex-wrap: wrap; gap: 0.45rem;
+      margin: 0.4rem 0 0.9rem;
+    }
+    .kpi {
+      font-size: 0.78rem;
+      padding: 0.3rem 0.55rem;
+      border-radius: 8px;
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .print-bar {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    button.btn {
+      appearance: none; border: 1px solid var(--line);
+      background: var(--brand); color: #fff;
+      font: inherit; font-size: 0.85rem; font-weight: 600;
+      padding: 0.45rem 0.85rem; border-radius: 9px; cursor: pointer;
+    }
+    button.btn.secondary { background: #fff; color: var(--brand); }
+    button.btn:hover { filter: brightness(1.05); }
+
+    footer.note {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: relative; height: auto; max-height: none;
+        border-right: 0; border-bottom: 1px solid var(--line);
+      }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      .toc, .print-bar { display: none !important; }
+      .layout { display: block; }
+      .main { max-width: none; padding: 0; }
+      section.block { break-inside: avoid; box-shadow: none; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="toc">
+      <div class="brand">
+        <div class="mark">40</div>
+        <div>
+          <h1>Fourty Demo Guide</h1>
+          <p>Client walkthrough · product map</p>
+        </div>
+      </div>
+      <nav id="toc-nav">
+        <div class="group">Start</div>
+        <a href="#overview">Overview</a>
+        <a href="#roles">User roles</a>
+        <a href="#access-matrix">Access matrix</a>
+        <a href="#system-flows">System flows</a>
+        <div class="group">Core ops</div>
+        <a href="#login">Login</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#inventory">Inventory</a>
+        <a href="#sales">Sales</a>
+        <a href="#new-sale">New sale</a>
+        <a href="#restock">Restock</a>
+        <a href="#closeout">Daily closeout</a>
+        <a href="#adjustments">Adjustments</a>
+        <a href="#remittances">Remittances</a>
+        <div class="group">Catalog &amp; people</div>
+        <a href="#stores">Stores</a>
+        <a href="#brands">Brands</a>
+        <a href="#subagents">Subagents / batches</a>
+        <a href="#team">Team</a>
+        <div class="group">Insight &amp; system</div>
+        <a href="#reports">Reports</a>
+        <a href="#audit">Audit trail</a>
+        <a href="#notifications">Notifications</a>
+        <a href="#settings">Settings</a>
+        <a href="#cross">Cross-cutting features</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="print-bar">
+        <span class="chip">Open this file in a browser · use sidebar to jump during demos</span>
+        <div>
+          <button class="btn secondary" type="button" onclick="window.print()">Print / PDF</button>
+        </div>
+      </div>
+
+      <header class="hero" id="overview">
+        <div class="eyebrow">Product demo artifact</div>
+        <h1>Fourty Distribution OS</h1>
+        <p class="lede">
+          A guided map of every page and feature for client demos: what it does,
+          how the workflow flows, and exactly what each role can and cannot do.
+        </p>
+        <div class="meta-row">
+          <span class="chip">Roles: Owner · Storekeeper · Subagent</span>
+          <span class="chip">Stack: Next.js · Supabase · Web Push</span>
+          <span class="chip">Currency default: ETB</span>
+        </div>
+      </header>
+
+      <!-- ROLES -->
+      <section class="block" id="roles">
+        <h2>User roles</h2>
+        <p class="sub">Three roles share one app. Access is shaped by sidebar, soft-deny screens, and database rules (RLS).</p>
+        <div class="grid-3">
+          <div class="card">
+            <div class="role-tag">Owner</div>
+            <h3>Company control</h3>
+            <p>Sees everything: all stores, catalog, team, audit, company policies, and review actions.</p>
+            <ul>
+              <li>Create storekeepers &amp; subagents</li>
+              <li>Review closeouts &amp; remittances</li>
+              <li>Company-wide reports</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="role-tag">Storekeeper</div>
+            <h3>Store operations</h3>
+            <p>Runs one store day-to-day: stock, sales, restock, closeout, adjustments, remittances.</p>
+            <ul>
+              <li>Scoped to assigned store</li>
+              <li>Can review remittances</li>
+              <li>No Team / Audit / catalog admin</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="role-tag">Subagent</div>
+            <h3>Field sales</h3>
+            <p>Sells from issued batches, remits cash, tracks own batches and notifications.</p>
+            <ul>
+              <li>Batch-based sales only</li>
+              <li>Submit remittances</li>
+              <li>No inventory / closeout / reports</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>How access is enforced</h3>
+        <div class="mermaid">
+flowchart LR
+  A[User signs in] --> B{Authenticated?}
+  B -->|No| L[Login]
+  B -->|Yes| C[App shell]
+  C --> D[Sidebar filtered by role]
+  D --> E[Page UI]
+  E --> F{Soft-deny?}
+  F -->|Yes| G[Access denied panel]
+  F -->|No| H[Full page features]
+  H --> I[Supabase RLS]
+  I --> J[Read / write allowed data only]
+        </div>
+        <div class="callout info">
+          Middleware only checks login. Role limits come from the navigation menu, soft-deny pages, and database policies.
+        </div>
+      </section>
+
+      <!-- ACCESS MATRIX -->
+      <section class="block" id="access-matrix">
+        <h2>Page access matrix</h2>
+        <p class="sub">
+          <span class="badge ok">Allowed</span> full intended use ·
+          <span class="badge part">Partial</span> usable but scoped / fewer actions ·
+          <span class="badge deny">Denied</span> not in menu and/or soft-denied
+        </p>
+        <table class="sticky-head">
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>Path</th>
+              <th>Owner</th>
+              <th>Storekeeper</th>
+              <th>Subagent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Dashboard</td><td><span class="path">/app/dashboard</span></td><td class="yes">Allowed</td><td class="partial">Partial</td><td class="yes">Allowed</td></tr>
+            <tr><td>Inventory</td><td><span class="path">/app/inventory</span></td><td class="yes">Allowed</td><td class="partial">Partial</td><td class="no">Denied</td></tr>
+            <tr><td>Sales</td><td><span class="path">/app/sales</span></td><td class="yes">Allowed</td><td class="partial">Partial</td><td class="yes">Allowed</td></tr>
+            <tr><td>New sale</td><td><span class="path">/app/sales/new</span></td><td class="yes">Allowed</td><td class="partial">Partial</td><td class="partial">Partial</td></tr>
+            <tr><td>Restock</td><td><span class="path">/app/restock</span></td><td class="yes">Allowed</td><td class="partial">Partial</td><td class="no">Denied</td></tr>
+            <tr><td>Daily closeout</td><td><span class="path">/app/closeout</span></td><td class="partial">Partial</td><td class="partial">Partial</td><td class="no">Denied</td></tr>
+            <tr><td>Adjustments</td><td><span class="path">/app/adjustments</span></td><td class="yes">Allowed</td><td class="yes">Allowed</td><td class="no">Denied</td></tr>
+            <tr><td>Remittances</td><td><span class="path">/app/remittances</span></td><td class="partial">Partial</td><td class="partial">Partial</td><td class="partial">Partial</td></tr>
+            <tr><td>Stores</td><td><span class="path">/app/stores</span></td><td class="yes">Allowed</td><td class="no">Denied</td><td class="no">Denied</td></tr>
+            <tr><td>Brands</td><td><span class="path">/app/brands</span></td><td class="yes">Allowed</td><td class="no">Denied</td><td class="no">Denied</td></tr>
+            <tr><td>Subagents / My batches</td><td><span class="path">/app/subagents</span></td><td class="yes">Allowed</td><td class="partial">Partial</td><td class="partial">Partial</td></tr>
+            <tr><td>Team</td><td><span class="path">/app/users</span></td><td class="yes">Allowed</td><td class="no">Denied</td><td class="no">Denied</td></tr>
+            <tr><td>Reports</td><td><span class="path">/app/reports</span></td><td class="yes">Allowed</td><td class="partial">Partial</td><td class="no">Denied</td></tr>
+            <tr><td>Audit trail</td><td><span class="path">/app/audit</span></td><td class="yes">Allowed</td><td class="no">Denied</td><td class="no">Denied</td></tr>
+            <tr><td>Notifications</td><td><span class="path">/app/notifications</span></td><td class="yes">Allowed</td><td class="yes">Allowed</td><td class="yes">Allowed</td></tr>
+            <tr><td>Settings</td><td><span class="path">/app/settings</span></td><td class="partial">Partial*</td><td class="partial">Partial</td><td class="partial">Partial</td></tr>
+          </tbody>
+        </table>
+        <p><small>* Owner-only Organization tab inside Settings.</small></p>
+      </section>
+
+      <!-- SYSTEM FLOWS -->
+      <section class="block" id="system-flows">
+        <h2>End-to-end business flows</h2>
+        <p class="sub">Use these diagrams while narrating the product story from stock → sale → cash → review.</p>
+
+        <h3>1. Store inventory loop</h3>
+        <div class="mermaid">
+flowchart TD
+  A[Owner creates Brands & Stores] --> B[Storekeeper / Owner Restocks inventory]
+  B --> C[Stock available at store]
+  C --> D[Record store sale + screenshot proof]
+  D --> E[Inventory qty decreases]
+  E --> F{Low stock?}
+  F -->|Yes| G[Low-stock alert / restock again]
+  F -->|No| H[Continue selling]
+  H --> I[Daily closeout declares cash]
+  I --> J[Owner reviews closeout]
+        </div>
+
+        <h3>2. Subagent batch loop</h3>
+        <div class="mermaid">
+flowchart TD
+  A[Owner / Storekeeper issues batch] --> B[Subagent receives cartons in hand]
+  B --> C[Subagent records sale from batch]
+  C --> D[Batch sold qty up · in-hand down]
+  D --> E[Subagent submits remittance + optional proof]
+  E --> F[Owner / Storekeeper confirms or rejects]
+  F --> G[Return leftover stock optional]
+  G --> H[Batch settled / closed]
+        </div>
+
+        <h3>3. Who does what day-to-day</h3>
+        <div class="mermaid">
+flowchart LR
+  subgraph Owner
+    O1[Catalog & Team]
+    O2[Review closeouts]
+    O3[Review remittances]
+    O4[Reports & Audit]
+  end
+  subgraph Storekeeper
+    S1[Restock & Adjust]
+    S2[Sell at store]
+    S3[Daily closeout]
+    S4[Issue batches]
+  end
+  subgraph Subagent
+    A1[Sell from batch]
+    A2[Remit cash]
+    A3[Track my batches]
+  end
+  O1 --> S1
+  S4 --> A1
+  S2 --> O2
+  A2 --> O3
+        </div>
+      </section>
+
+      <!-- LOGIN -->
+      <section class="block" id="login">
+        <h2>Login</h2>
+        <p class="sub"><span class="badge path">/login</span> · Public · all roles use the same screen</p>
+        <div class="feature-list">
+          <div class="feature"><strong>Brand stage</strong>Full-bleed background, product mark, desktop split layout.</div>
+          <div class="feature"><strong>Credentials</strong>Email + password via Supabase Auth.</div>
+          <div class="feature"><strong>Redirect</strong>Honors <code>?redirect=</code> or lands on Dashboard.</div>
+        </div>
+        <table>
+          <thead><tr><th>Action</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Sign in</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>Self-register</td><td class="no">No</td><td class="no">No</td><td class="no">No — owner creates accounts</td></tr>
+          </tbody>
+        </table>
+        <div class="mermaid">
+flowchart LR
+  A[Open /login] --> B[Enter email & password]
+  B --> C{Valid?}
+  C -->|No| D[Error toast]
+  C -->|Yes| E[/app/dashboard]
+        </div>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section class="block" id="dashboard">
+        <h2>Dashboard</h2>
+        <p class="sub"><span class="badge path">/app/dashboard</span> · Command overview for the selected period</p>
+        <div class="kpi-strip">
+          <span class="kpi">Revenue</span><span class="kpi">Cartons sold</span><span class="kpi">Transactions</span>
+          <span class="kpi">Low stock</span><span class="kpi">Inventory value</span><span class="kpi">Pending batches</span>
+          <span class="kpi">Active stores</span><span class="kpi">Active subagents</span>
+        </div>
+        <h3>Features</h3>
+        <div class="feature-list">
+          <div class="feature"><strong>Global filters</strong>Period presets + custom range; owner store picker.</div>
+          <div class="feature"><strong>Revenue vs cartons</strong>Trend chart for the selected window.</div>
+          <div class="feature"><strong>Brand mix</strong>Donut of contribution by brand.</div>
+          <div class="feature"><strong>Brand performance</strong>Bar comparison across brands.</div>
+          <div class="feature"><strong>Store radar</strong>Indexed revenue vs cartons by store.</div>
+          <div class="feature"><strong>Stock health</strong>Gauge from low-stock pressure.</div>
+          <div class="feature"><strong>By store table</strong>Search, pagination, mobile cards, row → store breakdown dialog.</div>
+          <div class="feature"><strong>Export</strong>Excel export of trend data.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>View dashboard</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>Filter by any store</td><td class="yes">Yes</td><td class="no">Own store only</td><td class="no">No store picker</td></tr>
+            <tr><td>Export trend</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- INVENTORY -->
+      <section class="block" id="inventory">
+        <h2>Inventory</h2>
+        <p class="sub"><span class="badge path">/app/inventory</span> · Live carton levels vs minimums</p>
+        <div class="kpi-strip">
+          <span class="kpi">SKUs</span><span class="kpi">Total cartons</span><span class="kpi">Low stock</span><span class="kpi">Below min</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Stock filter</strong>All / Low / Healthy + search.</div>
+          <div class="feature"><strong>Relative bars</strong>Top SKUs with min marker (Low / Watch / Healthy).</div>
+          <div class="feature"><strong>Inventory table</strong>Store, Brand, SKU, Qty, Min, Status · mobile cards · row details.</div>
+          <div class="feature"><strong>Set min (row)</strong>Edit minimum stock per SKU/store.</div>
+          <div class="feature"><strong>Bulk set min</strong>Owner sheet: same for all or per store.</div>
+          <div class="feature"><strong>Export</strong>Excel download.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Open page (sidebar)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+            <tr><td>All-stores filter</td><td class="yes">Yes</td><td class="no">Own store</td><td class="no">—</td></tr>
+            <tr><td>Set min stock (row)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">—</td></tr>
+            <tr><td>Bulk set min</td><td class="yes">Yes</td><td class="no">No</td><td class="no">—</td></tr>
+          </tbody>
+        </table>
+        <div class="mermaid">
+flowchart LR
+  A[View stock levels] --> B{Below min?}
+  B -->|Yes| C[Restock page]
+  B -->|No| D[Continue]
+  A --> E[Adjust min thresholds]
+        </div>
+      </section>
+
+      <!-- SALES -->
+      <section class="block" id="sales">
+        <h2>Sales</h2>
+        <p class="sub"><span class="badge path">/app/sales</span> · History, charts, and proof screenshots</p>
+        <div class="kpi-strip">
+          <span class="kpi">Revenue</span><span class="kpi">Cartons</span><span class="kpi">Transactions</span><span class="kpi">Avg ticket</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Filters</strong>Period, store (owner), brand, channel (Store / Subagent).</div>
+          <div class="feature"><strong>Daily volume chart</strong>Sales over the selected period.</div>
+          <div class="feature"><strong>Channel mix</strong>Store vs subagent pie.</div>
+          <div class="feature"><strong>Sale history</strong>Brand, qty, amount, channel badge, seller, proof thumb, date.</div>
+          <div class="feature"><strong>Proof viewer</strong>Large modal + open in new tab.</div>
+          <div class="feature"><strong>New sale CTA</strong>Goes to <code>/app/sales/new</code>.</div>
+          <div class="feature"><strong>Export</strong>Excel of filtered sales.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>View sales list</td><td class="yes">Yes</td><td class="yes">Own store</td><td class="yes">Own sales</td></tr>
+            <tr><td>Filter all stores</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+            <tr><td>Open proof screenshots</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>Start new sale</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- NEW SALE -->
+      <section class="block" id="new-sale">
+        <h2>New sale</h2>
+        <p class="sub"><span class="badge path">/app/sales/new</span> · Record a sale with screenshot proof</p>
+        <div class="callout">Sale screenshots can be required by Organization policy (owner setting).</div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Store / storekeeper path</h3>
+            <ul>
+              <li>Pick store (owner) or locked store (storekeeper)</li>
+              <li>Pick brand · see available cartons</li>
+              <li>Quantity · unit price (ETB) · live total</li>
+              <li>Notes · screenshot proof upload</li>
+              <li>Channel = <strong>store</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Subagent path</h3>
+            <ul>
+              <li>Select active batch (cartons in hand)</li>
+              <li>Store &amp; brand locked from batch</li>
+              <li>Same qty / price / notes / proof</li>
+              <li>Deducts batch hand stock</li>
+              <li>Channel = <strong>subagent</strong></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mermaid">
+flowchart TD
+  A[Open New sale] --> B{Role?}
+  B -->|Owner / Storekeeper| C[Choose store & brand from inventory]
+  B -->|Subagent| D[Choose active batch]
+  C --> E[Qty · price · notes · proof]
+  D --> E
+  E --> F{Stock enough?}
+  F -->|No| G[Validation error]
+  F -->|Yes| H[Create sale]
+  H --> I[Return to Sales list]
+        </div>
+        <table>
+          <thead><tr><th>Field / action</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Store</td><td>Select any</td><td>Locked</td><td>From batch</td></tr>
+            <tr><td>Brand</td><td>Select</td><td>Select</td><td>From batch</td></tr>
+            <tr><td>Batch required</td><td class="no">No</td><td class="no">No</td><td class="yes">Yes</td></tr>
+            <tr><td>Screenshot proof</td><td class="yes">Yes*</td><td class="yes">Yes*</td><td class="yes">Yes*</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- RESTOCK -->
+      <section class="block" id="restock">
+        <h2>Restock</h2>
+        <p class="sub"><span class="badge path">/app/restock</span> · Receive cartons into a store</p>
+        <div class="kpi-strip">
+          <span class="kpi">Cartons in</span><span class="kpi">Restock value</span><span class="kpi">Events</span><span class="kpi">Avg unit cost</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Add stock form</strong>Store, brand, qty, unit cost (defaults from brand), notes.</div>
+          <div class="feature"><strong>History</strong>Searchable table/cards, details dialog, export.</div>
+          <div class="feature"><strong>Period filter</strong>Owner store filter + date range.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Sidebar access</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+            <tr><td>Choose store</td><td class="yes">Yes</td><td class="no">Own store</td><td class="no">—</td></tr>
+            <tr><td>Post restock</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">—</td></tr>
+          </tbody>
+        </table>
+        <div class="mermaid">
+flowchart LR
+  A[Select store & brand] --> B[Enter qty & cost]
+  B --> C[Restock inventory]
+  C --> D[Inventory qty increases]
+  D --> E[History row + optional owner notify]
+        </div>
+      </section>
+
+      <!-- CLOSEOUT -->
+      <section class="block" id="closeout">
+        <h2>Daily closeout</h2>
+        <p class="sub"><span class="badge path">/app/closeout</span> · End-of-day cash declaration</p>
+        <div class="callout info">Subagents hitting this URL see a soft-deny: “for storekeepers and owners.”</div>
+        <div class="kpi-strip">
+          <span class="kpi">Today sales</span><span class="kpi">Cartons sold</span><span class="kpi">Transactions</span><span class="kpi">SKUs on hand</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Submit form</strong>Store, date, cash/transfer declared, opening &amp; closing notes.</div>
+          <div class="feature"><strong>History</strong>Status: Submitted / Reviewed / Draft · search · details · notes dialog.</div>
+          <div class="feature"><strong>Review</strong>Owner marks submitted closeouts as reviewed.</div>
+          <div class="feature"><strong>Export</strong>Excel of closeout history.</div>
+        </div>
+        <div class="mermaid">
+flowchart TD
+  A[Storekeeper submits closeout] --> B[Status = Submitted]
+  B --> C[Owner notified]
+  C --> D{Owner review}
+  D -->|Mark reviewed| E[Status = Reviewed]
+  D -->|Leave| B
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Access page</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">Soft-deny</td></tr>
+            <tr><td>Submit closeout</td><td class="yes">Any store</td><td class="yes">Own store</td><td class="no">No</td></tr>
+            <tr><td>Mark reviewed</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ADJUSTMENTS -->
+      <section class="block" id="adjustments">
+        <h2>Stock adjustments</h2>
+        <p class="sub"><span class="badge path">/app/adjustments</span> · Correct counts, damage, shrinkage, returns</p>
+        <div class="kpi-strip">
+          <span class="kpi">Total adjustments</span><span class="kpi">Positive</span><span class="kpi">Negative</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>New adjustment</strong>Store, brand, +/- qty, reason, notes.</div>
+          <div class="feature"><strong>Reasons</strong>Count correction · Damage · Shrinkage · Return to supplier · Other.</div>
+          <div class="feature"><strong>History</strong>Filter by reason · search · details · export.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Access</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">Soft-deny</td></tr>
+            <tr><td>Post adjustment</td><td class="yes">Any store</td><td class="yes">Own store</td><td class="no">No</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- REMITTANCES -->
+      <section class="block" id="remittances">
+        <h2>Remittances</h2>
+        <p class="sub"><span class="badge path">/app/remittances</span> · Cash / transfer settlements</p>
+        <div class="kpi-strip">
+          <span class="kpi">Total records</span><span class="kpi">Pending review</span><span class="kpi">Confirmed amount</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Submit</strong>Amount, method (bank / mobile money / cash), reference, optional proof, notes.</div>
+          <div class="feature"><strong>Review</strong>Confirm or Reject pending rows.</div>
+          <div class="feature"><strong>Proof</strong>Image/PDF viewer when attached.</div>
+          <div class="feature"><strong>Status filter</strong>Pending / Confirmed / Rejected.</div>
+        </div>
+        <div class="mermaid">
+flowchart TD
+  A[User submits remittance] --> B[Status = Pending]
+  B --> C{Owner or Storekeeper}
+  C -->|Confirm| D[Confirmed]
+  C -->|Reject| E[Rejected]
+  A -. Subagent tagged .-> B
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Submit remittance</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>Confirm / Reject</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+            <tr><td>Pick store on form</td><td class="yes">Yes</td><td class="no">Own store</td><td class="partial">Scoped</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- STORES -->
+      <section class="block" id="stores">
+        <h2>Stores</h2>
+        <p class="sub"><span class="badge path">/app/stores</span> · Owner catalog of locations</p>
+        <div class="kpi-strip">
+          <span class="kpi">Total</span><span class="kpi">Active</span><span class="kpi">Inactive</span><span class="kpi">Cities</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>CRUD</strong>Add / edit name, code, address, city, phone, active.</div>
+          <div class="feature"><strong>Activate / Deactivate</strong>Without deleting history.</div>
+          <div class="feature"><strong>Search &amp; status filter</strong>Plus mobile cards &amp; export.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Manage stores</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- BRANDS -->
+      <section class="block" id="brands">
+        <h2>Brands</h2>
+        <p class="sub"><span class="badge path">/app/brands</span> · Product catalog (cigarettes / SKUs)</p>
+        <div class="kpi-strip">
+          <span class="kpi">Total brands</span><span class="kpi">Active</span><span class="kpi">Avg unit price</span><span class="kpi">List price</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Fields</strong>Name, SKU, description, carton size, unit price, cost price, active.</div>
+          <div class="feature"><strong>Activate / Deactivate</strong>Keep historical sales intact.</div>
+          <div class="feature"><strong>Export</strong>Excel catalog dump.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Manage brands</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+            <tr><td>Use brands in sales</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Via batch</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SUBAGENTS -->
+      <section class="block" id="subagents">
+        <h2>Subagents / My batches</h2>
+        <p class="sub"><span class="badge path">/app/subagents</span> · Issue stock to field agents and track returns</p>
+        <div class="kpi-strip">
+          <span class="kpi">Active batches</span><span class="kpi">In hand</span><span class="kpi">Sold</span><span class="kpi">Returned</span><span class="kpi">Overdue-ish</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Issue batch</strong>Store, subagent, brand, qty, notes (owner/SK).</div>
+          <div class="feature"><strong>Roster</strong>Active agents with in-hand / sold summaries.</div>
+          <div class="feature"><strong>Batch ledger</strong>Taken / Sold / Returned / In hand · status · days out.</div>
+          <div class="feature"><strong>Return stock</strong>Bring leftovers back to store inventory.</div>
+          <div class="feature"><strong>Subagent view</strong>Title becomes “My batches”; own ledger only.</div>
+        </div>
+        <div class="mermaid">
+flowchart TD
+  A[Issue batch] --> B[Status Active · In hand = qty]
+  B --> C[Subagent sales]
+  C --> D[Sold ↑ · In hand ↓]
+  D --> E{Return leftovers?}
+  E -->|Yes| F[Return stock dialog]
+  F --> G[Partially returned / Settled]
+  E -->|No more stock| H[Settled when cleared]
+  B --> I{14+ days open?}
+  I -->|Yes| J[Overdue / stale flag]
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Issue batch</td><td class="yes">Yes</td><td class="yes">Own store</td><td class="no">No</td></tr>
+            <tr><td>Return stock</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+            <tr><td>See roster</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+            <tr><td>See ledger</td><td class="yes">All</td><td class="yes">Own store</td><td class="yes">Own batches</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- TEAM -->
+      <section class="block" id="team">
+        <h2>Team</h2>
+        <p class="sub"><span class="badge path">/app/users</span> · Owner creates logins for the organization</p>
+        <div class="callout info">Non-owners see soft-deny. Create API returns 403 unless actor is owner.</div>
+        <div class="feature-list">
+          <div class="feature"><strong>Create account</strong>Name, email, phone, role, store, password (generate), active flag.</div>
+          <div class="feature"><strong>Credentials dialog</strong>One-time copy email / password after create.</div>
+          <div class="feature"><strong>Edit</strong>Role, store, active — cannot deactivate yourself.</div>
+          <div class="feature"><strong>Filters</strong>Search, role, status · export Excel.</div>
+        </div>
+        <div class="mermaid">
+flowchart LR
+  A[Owner opens Team] --> B[Create account]
+  B --> C[Service role creates Auth user]
+  C --> D[Profile row with role & store]
+  D --> E[Show credentials once]
+  E --> F[User can log in]
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Manage team</td><td class="yes">Yes</td><td class="no">Soft-deny</td><td class="no">Soft-deny</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="block" id="reports">
+        <h2>Reports</h2>
+        <p class="sub"><span class="badge path">/app/reports</span> · Deep analytics for owners &amp; storekeepers</p>
+        <div class="kpi-strip">
+          <span class="kpi">Revenue</span><span class="kpi">Cartons</span><span class="kpi">Transactions</span><span class="kpi">Avg ticket</span>
+          <span class="kpi">Avg/carton</span><span class="kpi">With proof</span><span class="kpi">Inventory value</span><span class="kpi">Pending batches</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Daily breakdown</strong>Trend of sales by day.</div>
+          <div class="feature"><strong>Channel mix</strong>Store vs subagent.</div>
+          <div class="feature"><strong>Top sellers</strong>Chart of leading sellers.</div>
+          <div class="feature"><strong>Proof coverage</strong>Radial of sales with screenshots.</div>
+          <div class="feature"><strong>Store comparison</strong>Bar + table.</div>
+          <div class="feature"><strong>Brand mix</strong>Contribution by brand.</div>
+          <div class="feature"><strong>Seller leaderboard</strong>Card list of people.</div>
+          <div class="feature"><strong>Screenshot gallery</strong>Up to 48 proofs · ProofViewer.</div>
+          <div class="feature"><strong>Transaction detail</strong>Searchable sale rows.</div>
+          <div class="feature"><strong>Export</strong>Excel with summary + sales sheets.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Open reports</td><td class="yes">Yes</td><td class="yes">Own store</td><td class="no">Soft-deny</td></tr>
+            <tr><td>Multi-store filter</td><td class="yes">Yes</td><td class="no">No</td><td class="no">—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- AUDIT -->
+      <section class="block" id="audit">
+        <h2>Audit trail</h2>
+        <p class="sub"><span class="badge path">/app/audit</span> · Immutable activity log for owners</p>
+        <div class="kpi-strip">
+          <span class="kpi">Events</span><span class="kpi">Unique actors</span><span class="kpi">Today</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Filters</strong>Search, store, action type.</div>
+          <div class="feature"><strong>Row detail</strong>Full JSON payload + IP when present.</div>
+          <div class="feature"><strong>Export</strong>Excel of filtered events.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>Read audit log</td><td class="yes">Yes</td><td class="no">Soft-deny</td><td class="no">Soft-deny</td></tr>
+            <tr><td>Edit / delete logs</td><td class="no">No</td><td class="no">No</td><td class="no">No</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- NOTIFICATIONS -->
+      <section class="block" id="notifications">
+        <h2>Notifications</h2>
+        <p class="sub"><span class="badge path">/app/notifications</span> · In-app inbox (all roles)</p>
+        <div class="kpi-strip">
+          <span class="kpi">Unread</span><span class="kpi">Read</span><span class="kpi">Total</span><span class="kpi">Types</span>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Unread badge</strong>On sidebar Notifications item.</div>
+          <div class="feature"><strong>Card list</strong>Title, type badge, body, time.</div>
+          <div class="feature"><strong>Mark read</strong>One or Mark all read.</div>
+          <div class="feature"><strong>Open link</strong>Jumps to related page when present.</div>
+          <div class="feature"><strong>Filters</strong>Search · Read / Unread / All.</div>
+        </div>
+        <table>
+          <thead><tr><th>Capability</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr><td>View own notifications</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="block" id="settings">
+        <h2>Settings</h2>
+        <p class="sub"><span class="badge path">/app/settings</span> · Profile, security, push, theme, org policies</p>
+        <p><strong>Header action:</strong> Export my data (JSON: profile, preferences, devices, org if owner).</p>
+
+        <h3>Tabs &amp; role access</h3>
+        <table>
+          <thead><tr><th>Tab</th><th>Features</th><th>Owner</th><th>Storekeeper</th><th>Subagent</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Profile</td>
+              <td>Full name, phone; email/role/store read-only</td>
+              <td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td>
+            </tr>
+            <tr>
+              <td>Security</td>
+              <td>Change password · session sign out</td>
+              <td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td>
+            </tr>
+            <tr>
+              <td>Notifications</td>
+              <td>Enable push, devices, alert toggles, quiet hours, Send test</td>
+              <td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td>
+            </tr>
+            <tr>
+              <td>Appearance</td>
+              <td>Light / Dark / System theme</td>
+              <td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td>
+            </tr>
+            <tr>
+              <td>Organization</td>
+              <td>Company profile, currency, timezone, policies</td>
+              <td class="yes">Yes</td><td class="no">No</td><td class="no">No</td>
+            </tr>
+            <tr>
+              <td>About</td>
+              <td>Product blurb, role, currency, timezone</td>
+              <td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Push notifications (demo talking points)</h3>
+        <div class="feature-list">
+          <div class="feature"><strong>Enable / Register</strong>Browser permission + service worker subscription.</div>
+          <div class="feature"><strong>Send test</strong>Verifies end-to-end delivery.</div>
+          <div class="feature"><strong>Devices</strong>List / revoke one / revoke all.</div>
+          <div class="feature"><strong>Preference toggles</strong>Sales, restocks, low stock, batches, reports, remittances, closeouts, team, system.</div>
+          <div class="feature"><strong>Quiet hours</strong>Suppress push during window; in-app still stored.</div>
+          <div class="feature"><strong>iPhone note</strong>Must Add to Home Screen; Safari tabs cannot receive web push.</div>
+        </div>
+        <div class="mermaid">
+flowchart TD
+  A[Enable alerts] --> B[Request permission]
+  B --> C[Register service worker]
+  C --> D[Save subscription]
+  D --> E[Event happens in app]
+  E --> F{Pref + quiet hours OK?}
+  F -->|No| G[In-app notification only]
+  F -->|Yes| H[Web push to devices]
+        </div>
+
+        <h3>Organization policies (owner)</h3>
+        <ul>
+          <li>Require sale screenshots</li>
+          <li>Require remittance proof</li>
+          <li>Allow negative store stock</li>
+          <li>Default min stock, closeout reminder hour, fiscal year start</li>
+          <li>Currency (ETB / USD / EUR) &amp; timezone</li>
+        </ul>
+      </section>
+
+      <!-- CROSS -->
+      <section class="block" id="cross">
+        <h2>Cross-cutting features</h2>
+        <p class="sub">Capabilities that appear across many pages — call these out once in the demo.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>UX patterns</h3>
+            <ul>
+              <li>Global store + date filters (where relevant)</li>
+              <li>Desktop tables + mobile row cards</li>
+              <li>Row click → details dialog</li>
+              <li>Compact toolbar search &amp; filters</li>
+              <li>Dark / light theme everywhere</li>
+              <li>Push permission / iOS install banner</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Evidence &amp; export</h3>
+            <ul>
+              <li>Sale screenshot proofs</li>
+              <li>Remittance proof (image/PDF)</li>
+              <li>ProofViewer modal</li>
+              <li>Excel export on operational pages</li>
+              <li>Settings “Export my data” JSON</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Suggested demo script (15–20 min)</h3>
+        <div class="mermaid">
+flowchart TD
+  A[Login as Owner] --> B[Dashboard tour]
+  B --> C[Stores & Brands setup]
+  C --> D[Team: create storekeeper + subagent]
+  D --> E[Restock inventory]
+  E --> F[Issue subagent batch]
+  F --> G[Record store sale with proof]
+  G --> H[Switch to Subagent: sell from batch]
+  H --> I[Submit remittance]
+  I --> J[Owner confirms remittance]
+  J --> K[Closeout + review]
+  K --> L[Reports + Audit]
+  L --> M[Settings: push + org policies]
+        </div>
+
+        <h3>Soft-deny pages (URL reachable, UI blocked)</h3>
+        <table>
+          <thead><tr><th>Page</th><th>Blocked for</th><th>Message gist</th></tr></thead>
+          <tbody>
+            <tr><td>Closeout</td><td>Subagent</td><td>For storekeepers and owners</td></tr>
+            <tr><td>Adjustments</td><td>Subagent</td><td>Limited to store staff and owners</td></tr>
+            <tr><td>Reports</td><td>Subagent</td><td>Owners and storekeepers</td></tr>
+            <tr><td>Team</td><td>Storekeeper, Subagent</td><td>Owners only</td></tr>
+            <tr><td>Audit</td><td>Storekeeper, Subagent</td><td>Owners only</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <footer class="note">
+        Fourty Client Demo Guide · generated for product walkthroughs · open
+        <code>docs/client-demo-guide.html</code> in any browser · diagrams render via Mermaid.
+        Access rules reflect sidebar filters, soft-deny UI, and RLS as implemented in the app.
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#e8eee9",
+        primaryTextColor: "#14201a",
+        primaryBorderColor: "#1b4332",
+        lineColor: "#2d6a4f",
+        secondaryColor: "#f4f7f5",
+        tertiaryColor: "#ffffff",
+        fontFamily: "Segoe UI, IBM Plex Sans, system-ui, sans-serif"
+      },
+      flowchart: { curve: "basis", htmlLabels: true }
+    });
+
+    const links = [...document.querySelectorAll("#toc-nav a")];
+    const sections = links
+      .map((a) => document.querySelector(a.getAttribute("href")))
+      .filter(Boolean);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        const id = "#" + visible.target.id;
+        links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === id));
+      },
+      { rootMargin: "-20% 0px -65% 0px", threshold: [0.1, 0.25, 0.5] }
+    );
+    sections.forEach((s) => io.observe(s));
+  </script>
+</body>
+</html>

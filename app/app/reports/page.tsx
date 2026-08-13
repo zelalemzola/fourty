@@ -398,7 +398,7 @@ export default function ReportsPage() {
       )}
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <div className="panel p-3 sm:p-4 lg:col-span-3">
+        <div className="panel min-w-0 overflow-hidden p-3 sm:p-4 lg:col-span-3">
           <div className="mb-3">
             <h2 className="text-sm font-semibold">
               Daily breakdown
@@ -408,16 +408,19 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-video w-full rounded-xl" />
+            <Skeleton className="h-[220px] w-full rounded-xl sm:aspect-video sm:h-auto" />
           ) : !(stats?.salesTrend?.length) ? (
-            <div className="flex aspect-video items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <div className="flex h-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:aspect-video sm:h-auto">
               No daily sales in this period
             </div>
           ) : (
-            <ChartContainer config={trendConfig} className="aspect-video w-full">
+            <ChartContainer
+              config={trendConfig}
+              className="!aspect-auto h-[220px] w-full sm:aspect-video sm:h-auto"
+            >
               <ComposedChart
                 data={stats.salesTrend}
-                margin={{ left: 4, right: 8 }}
+                margin={{ top: 8, left: 0, right: 4, bottom: 0 }}
               >
                 <defs>
                   <linearGradient id="rptRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -446,7 +449,7 @@ export default function ReportsPage() {
                   yAxisId="rev"
                   tickLine={false}
                   axisLine={false}
-                  width={48}
+                  width={40}
                   tickFormatter={(v) =>
                     v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
                   }
@@ -456,7 +459,7 @@ export default function ReportsPage() {
                   orientation="right"
                   tickLine={false}
                   axisLine={false}
-                  width={36}
+                  width={28}
                 />
                 <ChartTooltip
                   content={
@@ -494,7 +497,7 @@ export default function ReportsPage() {
           )}
         </div>
 
-        <div className="panel p-3 sm:p-4 lg:col-span-2">
+        <div className="panel min-w-0 overflow-hidden p-3 sm:p-4 lg:col-span-2">
           <div className="mb-3">
             <h2 className="text-sm font-semibold">Channel mix</h2>
             <p className="text-xs text-muted-foreground">
@@ -502,17 +505,17 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-square w-full max-w-[280px] mx-auto rounded-xl" />
+            <Skeleton className="mx-auto aspect-square w-full max-w-[240px] rounded-xl" />
           ) : channelMix.length === 0 ? (
-            <div className="flex aspect-square max-w-[280px] mx-auto items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <div className="mx-auto flex aspect-square max-w-[240px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
               No channel data
             </div>
           ) : (
             <ChartContainer
               config={channelConfig}
-              className="mx-auto aspect-square max-h-[280px] w-full"
+              className="mx-auto !aspect-square max-h-[240px] w-full"
             >
-              <PieChart>
+              <PieChart margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
@@ -524,8 +527,8 @@ export default function ReportsPage() {
                   data={channelMix}
                   dataKey="value"
                   nameKey="name"
-                  innerRadius={55}
-                  outerRadius={90}
+                  innerRadius="45%"
+                  outerRadius="72%"
                   paddingAngle={3}
                 >
                   {channelMix.map((_, i) => (
@@ -543,14 +546,16 @@ export default function ReportsPage() {
               <li key={c.name} className="flex justify-between gap-2">
                 <span className="flex items-center gap-2">
                   <span
-                    className="size-2.5 rounded-full"
+                    className="size-2.5 shrink-0 rounded-full"
                     style={{
                       background: CHANNEL_COLORS[i % CHANNEL_COLORS.length],
                     }}
                   />
                   {c.name}
                 </span>
-                <span className="font-medium">{formatCurrency(c.value)}</span>
+                <span className="font-medium tabular-nums">
+                  {formatCurrency(c.value)}
+                </span>
               </li>
             ))}
           </ul>
@@ -558,7 +563,7 @@ export default function ReportsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <div className="panel p-3 sm:p-4 lg:col-span-3">
+        <div className="panel min-w-0 overflow-hidden p-3 sm:p-4 lg:col-span-3">
           <div className="mb-3">
             <h2 className="text-sm font-semibold">Top sellers</h2>
             <p className="text-xs text-muted-foreground">
@@ -566,19 +571,19 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-video w-full rounded-xl" />
+            <Skeleton className="h-[220px] w-full rounded-xl sm:aspect-video sm:h-auto" />
           ) : topSellerChart.length === 0 ? (
-            <div className="flex aspect-video items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <div className="flex h-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:aspect-video sm:h-auto">
               No sellers in view
             </div>
           ) : (
             <ChartContainer
               config={sellerConfig}
-              className="aspect-video w-full"
+              className="!aspect-auto h-[220px] w-full sm:aspect-video sm:h-auto"
             >
               <ComposedChart
                 data={topSellerChart}
-                margin={{ left: 4, right: 8, bottom: 8 }}
+                margin={{ top: 8, left: 0, right: 4, bottom: 4 }}
               >
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis
@@ -586,12 +591,18 @@ export default function ReportsPage() {
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
+                  interval="preserveStartEnd"
+                  tickFormatter={(v) =>
+                    String(v).length > 8
+                      ? `${String(v).slice(0, 8)}…`
+                      : String(v)
+                  }
                 />
                 <YAxis
                   yAxisId="rev"
                   tickLine={false}
                   axisLine={false}
-                  width={48}
+                  width={40}
                   tickFormatter={(v) =>
                     v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
                   }
@@ -601,7 +612,7 @@ export default function ReportsPage() {
                   orientation="right"
                   tickLine={false}
                   axisLine={false}
-                  width={36}
+                  width={28}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar
@@ -625,7 +636,7 @@ export default function ReportsPage() {
           )}
         </div>
 
-        <div className="panel p-3 sm:p-4 lg:col-span-2">
+        <div className="panel min-w-0 overflow-hidden p-3 sm:p-4 lg:col-span-2">
           <div className="mb-3">
             <h2 className="text-sm font-semibold">Proof coverage</h2>
             <p className="text-xs text-muted-foreground">
@@ -633,16 +644,16 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="mx-auto aspect-square max-h-[240px] w-full rounded-xl" />
+            <Skeleton className="mx-auto aspect-square max-h-[220px] w-full rounded-xl" />
           ) : sales.length === 0 ? (
-            <div className="flex aspect-square max-h-[240px] mx-auto items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <div className="mx-auto flex aspect-square max-h-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
               No sales to score
             </div>
           ) : (
-            <div className="relative">
+            <div className="relative mx-auto aspect-square max-h-[220px] w-full overflow-hidden">
               <ChartContainer
                 config={proofConfig}
-                className="mx-auto aspect-square max-h-[240px] w-full"
+                className="!aspect-square h-full max-h-none w-full"
               >
                 <RadialBarChart
                   data={proofRadial}
@@ -681,7 +692,7 @@ export default function ReportsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="panel p-3 sm:p-4">
+        <div className="panel min-w-0 overflow-hidden p-3 sm:p-4">
           <div className="mb-3">
             <h2 className="text-sm font-semibold">
               Store comparison
@@ -691,33 +702,33 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-video w-full rounded-xl" />
+            <Skeleton className="h-[240px] w-full rounded-xl sm:aspect-[4/3] sm:h-auto" />
           ) : !(stats?.storeBreakdown?.length) ? (
-            <div className="flex aspect-video items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <div className="flex h-[240px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:aspect-[4/3] sm:h-auto">
               No store data
             </div>
           ) : (
             <>
               <ChartContainer
                 config={storeConfig}
-                className="aspect-[4/3] w-full"
+                className="!aspect-auto h-[240px] w-full sm:aspect-[4/3] sm:h-auto"
               >
                 <BarChart
                   data={stats.storeBreakdown}
                   layout="vertical"
-                  margin={{ left: 4, right: 8 }}
+                  margin={{ top: 4, left: 0, right: 8, bottom: 4 }}
                 >
                   <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                   <XAxis type="number" hide />
                   <YAxis
                     dataKey="name"
                     type="category"
-                    width={96}
+                    width={72}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(v) =>
-                      String(v).length > 14
-                        ? `${String(v).slice(0, 14)}…`
+                      String(v).length > 10
+                        ? `${String(v).slice(0, 10)}…`
                         : String(v)
                     }
                   />
@@ -774,7 +785,7 @@ export default function ReportsPage() {
           )}
         </div>
 
-        <div className="panel p-3 sm:p-4">
+        <div className="panel min-w-0 overflow-hidden p-3 sm:p-4">
           <div className="mb-3">
             <h2 className="text-sm font-semibold">Brand mix</h2>
             <p className="text-xs text-muted-foreground">
@@ -782,32 +793,33 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-video w-full rounded-xl" />
+            <Skeleton className="h-[260px] w-full rounded-xl sm:aspect-[4/3] sm:h-auto" />
           ) : !(stats?.brandBreakdown?.length) ? (
-            <div className="flex aspect-video items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <div className="flex h-[260px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:aspect-[4/3] sm:h-auto">
               No brand data
             </div>
           ) : (
             <ChartContainer
               config={brandConfig}
-              className="aspect-[4/3] w-full"
+              className="!aspect-auto h-[260px] w-full sm:aspect-[4/3] sm:h-auto"
             >
               <ComposedChart
                 data={stats.brandBreakdown.slice(0, 8)}
-                margin={{ left: 4, right: 8, bottom: 48 }}
+                margin={{ top: 8, left: 0, right: 4, bottom: 28 }}
               >
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis
                   dataKey="name"
                   tickLine={false}
                   axisLine={false}
-                  angle={-35}
+                  angle={-28}
                   textAnchor="end"
                   interval={0}
-                  height={60}
+                  height={48}
+                  tickMargin={4}
                   tickFormatter={(v) =>
-                    String(v).length > 10
-                      ? `${String(v).slice(0, 10)}…`
+                    String(v).length > 8
+                      ? `${String(v).slice(0, 8)}…`
                       : String(v)
                   }
                 />
@@ -815,7 +827,7 @@ export default function ReportsPage() {
                   yAxisId="rev"
                   tickLine={false}
                   axisLine={false}
-                  width={44}
+                  width={36}
                   tickFormatter={(v) =>
                     v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
                   }
@@ -825,7 +837,7 @@ export default function ReportsPage() {
                   orientation="right"
                   tickLine={false}
                   axisLine={false}
-                  width={36}
+                  width={28}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar
