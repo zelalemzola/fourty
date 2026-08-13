@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import {
@@ -64,8 +64,6 @@ import {
 } from "@/components/ui/table";
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -81,6 +79,7 @@ import { chartColors } from "@/lib/chart-theme";
 import { usePagination } from "@/hooks/use-pagination";
 import { TablePagination } from "@/components/table/table-pagination";
 import { RowActions } from "@/components/table/row-actions";
+import { cn } from "@/lib/utils";
 
 const trendConfig = {
   revenue: { label: "Revenue", color: chartColors.navy },
@@ -112,6 +111,23 @@ const channelConfig = {
 } satisfies ChartConfig;
 
 const CHANNEL_COLORS = [chartColors.navy, chartColors.coral];
+
+/** Keeps pie / radial charts square and inside the card on narrow phones. */
+function RoundChartFrame({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("mx-auto w-full", className)}>
+      <div className="relative mx-auto aspect-square w-full max-w-[11.5rem] overflow-hidden sm:max-w-[13.75rem]">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function ReportsPage() {
   const profile = useSelector((s: RootState) => s.auth.profile);
@@ -408,92 +424,109 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[220px] w-full rounded-xl sm:aspect-video sm:h-auto" />
+            <Skeleton className="h-[200px] w-full rounded-xl sm:h-[260px]" />
           ) : !(stats?.salesTrend?.length) ? (
-            <div className="flex h-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:aspect-video sm:h-auto">
+            <div className="flex h-[200px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:h-[260px]">
               No daily sales in this period
             </div>
           ) : (
-            <ChartContainer
-              config={trendConfig}
-              className="!aspect-auto h-[220px] w-full sm:aspect-video sm:h-auto"
-            >
-              <ComposedChart
-                data={stats.salesTrend}
-                margin={{ top: 8, left: 0, right: 4, bottom: 0 }}
+            <>
+              <ChartContainer
+                config={trendConfig}
+                className="!aspect-auto h-[200px] w-full max-w-full sm:h-[260px] sm:aspect-auto"
               >
-                <defs>
-                  <linearGradient id="rptRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop
-                      offset="5%"
-                      stopColor={chartColors.navy}
-                      stopOpacity={0.3}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor={chartColors.navy}
-                      stopOpacity={0.02}
-                    />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  minTickGap={28}
-                  tickFormatter={(v) => formatDate(v, "MMM d")}
-                />
-                <YAxis
-                  yAxisId="rev"
-                  tickLine={false}
-                  axisLine={false}
-                  width={40}
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-                  }
-                />
-                <YAxis
-                  yAxisId="cart"
-                  orientation="right"
-                  tickLine={false}
-                  axisLine={false}
-                  width={28}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      labelFormatter={(v) => formatDate(String(v))}
-                    />
-                  }
-                />
-                <Area
-                  yAxisId="rev"
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke={chartColors.navy}
-                  fill="url(#rptRevenue)"
-                  strokeWidth={2}
-                />
-                <Bar
-                  yAxisId="cart"
-                  dataKey="cartons"
-                  fill={chartColors.coral}
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={28}
-                />
-                <Line
-                  yAxisId="cart"
-                  type="monotone"
-                  dataKey="cartons"
-                  stroke={chartColors.coral}
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <ChartLegend content={<ChartLegendContent />} />
-              </ComposedChart>
-            </ChartContainer>
+                <ComposedChart
+                  data={stats.salesTrend}
+                  margin={{ top: 8, left: 0, right: 2, bottom: 4 }}
+                >
+                  <defs>
+                    <linearGradient id="rptRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor={chartColors.navy}
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={chartColors.navy}
+                        stopOpacity={0.02}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    minTickGap={28}
+                    tickFormatter={(v) => formatDate(v, "MMM d")}
+                  />
+                  <YAxis
+                    yAxisId="rev"
+                    tickLine={false}
+                    axisLine={false}
+                    width={36}
+                    tickFormatter={(v) =>
+                      v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
+                    }
+                  />
+                  <YAxis
+                    yAxisId="cart"
+                    orientation="right"
+                    tickLine={false}
+                    axisLine={false}
+                    width={24}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(v) => formatDate(String(v))}
+                      />
+                    }
+                  />
+                  <Area
+                    yAxisId="rev"
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke={chartColors.navy}
+                    fill="url(#rptRevenue)"
+                    strokeWidth={2}
+                  />
+                  <Bar
+                    yAxisId="cart"
+                    dataKey="cartons"
+                    fill={chartColors.coral}
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={28}
+                  />
+                  <Line
+                    yAxisId="cart"
+                    type="monotone"
+                    dataKey="cartons"
+                    stroke={chartColors.coral}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </ComposedChart>
+              </ChartContainer>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-[2px]"
+                    style={{ background: chartColors.navy }}
+                  />
+                  Revenue
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-[2px]"
+                    style={{ background: chartColors.coral }}
+                  />
+                  Cartons
+                </span>
+              </div>
+            </>
           )}
         </div>
 
@@ -505,55 +538,64 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="mx-auto aspect-square w-full max-w-[240px] rounded-xl" />
+            <RoundChartFrame>
+              <Skeleton className="size-full rounded-xl" />
+            </RoundChartFrame>
           ) : channelMix.length === 0 ? (
-            <div className="mx-auto flex aspect-square max-w-[240px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
-              No channel data
-            </div>
+            <RoundChartFrame>
+              <div className="flex size-full items-center justify-center rounded-xl bg-muted/40 text-center text-sm text-muted-foreground">
+                No channel data
+              </div>
+            </RoundChartFrame>
           ) : (
-            <ChartContainer
-              config={channelConfig}
-              className="mx-auto !aspect-square max-h-[240px] w-full"
-            >
-              <PieChart margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(v) => formatCurrency(Number(v))}
-                    />
-                  }
-                />
-                <Pie
-                  data={channelMix}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius="45%"
-                  outerRadius="72%"
-                  paddingAngle={3}
-                >
-                  {channelMix.map((_, i) => (
-                    <Cell
-                      key={i}
-                      fill={CHANNEL_COLORS[i % CHANNEL_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ChartContainer>
+            <RoundChartFrame>
+              <ChartContainer
+                config={channelConfig}
+                className="!aspect-auto size-full max-h-none"
+                initialDimension={{ width: 200, height: 200 }}
+              >
+                <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        formatter={(v) => formatCurrency(Number(v))}
+                      />
+                    }
+                  />
+                  <Pie
+                    data={channelMix}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="46%"
+                    outerRadius="68%"
+                    paddingAngle={3}
+                  >
+                    {channelMix.map((_, i) => (
+                      <Cell
+                        key={i}
+                        fill={CHANNEL_COLORS[i % CHANNEL_COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
+            </RoundChartFrame>
           )}
-          <ul className="mt-2 space-y-1 text-sm">
+          <ul className="mt-3 space-y-1 text-sm">
             {channelMix.map((c, i) => (
               <li key={c.name} className="flex justify-between gap-2">
-                <span className="flex items-center gap-2">
+                <span className="flex min-w-0 items-center gap-2">
                   <span
                     className="size-2.5 shrink-0 rounded-full"
                     style={{
                       background: CHANNEL_COLORS[i % CHANNEL_COLORS.length],
                     }}
                   />
-                  {c.name}
+                  <span className="truncate">{c.name}</span>
                 </span>
-                <span className="font-medium tabular-nums">
+                <span className="shrink-0 font-medium tabular-nums">
                   {formatCurrency(c.value)}
                 </span>
               </li>
@@ -571,68 +613,85 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[220px] w-full rounded-xl sm:aspect-video sm:h-auto" />
+            <Skeleton className="h-[200px] w-full rounded-xl sm:h-[260px]" />
           ) : topSellerChart.length === 0 ? (
-            <div className="flex h-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:aspect-video sm:h-auto">
+            <div className="flex h-[200px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:h-[260px]">
               No sellers in view
             </div>
           ) : (
-            <ChartContainer
-              config={sellerConfig}
-              className="!aspect-auto h-[220px] w-full sm:aspect-video sm:h-auto"
-            >
-              <ComposedChart
-                data={topSellerChart}
-                margin={{ top: 8, left: 0, right: 4, bottom: 4 }}
+            <>
+              <ChartContainer
+                config={sellerConfig}
+                className="!aspect-auto h-[200px] w-full max-w-full sm:h-[260px]"
               >
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  interval="preserveStartEnd"
-                  tickFormatter={(v) =>
-                    String(v).length > 8
-                      ? `${String(v).slice(0, 8)}…`
-                      : String(v)
-                  }
-                />
-                <YAxis
-                  yAxisId="rev"
-                  tickLine={false}
-                  axisLine={false}
-                  width={40}
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-                  }
-                />
-                <YAxis
-                  yAxisId="cart"
-                  orientation="right"
-                  tickLine={false}
-                  axisLine={false}
-                  width={28}
-                />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar
-                  yAxisId="rev"
-                  dataKey="revenue"
-                  fill={chartColors.navy}
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={36}
-                />
-                <Line
-                  yAxisId="cart"
-                  type="monotone"
-                  dataKey="cartons"
-                  stroke={chartColors.coral}
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: chartColors.coral }}
-                />
-                <ChartLegend content={<ChartLegendContent />} />
-              </ComposedChart>
-            </ChartContainer>
+                <ComposedChart
+                  data={topSellerChart}
+                  margin={{ top: 8, left: 0, right: 2, bottom: 4 }}
+                >
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    interval="preserveStartEnd"
+                    tickFormatter={(v) =>
+                      String(v).length > 8
+                        ? `${String(v).slice(0, 8)}…`
+                        : String(v)
+                    }
+                  />
+                  <YAxis
+                    yAxisId="rev"
+                    tickLine={false}
+                    axisLine={false}
+                    width={36}
+                    tickFormatter={(v) =>
+                      v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
+                    }
+                  />
+                  <YAxis
+                    yAxisId="cart"
+                    orientation="right"
+                    tickLine={false}
+                    axisLine={false}
+                    width={24}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar
+                    yAxisId="rev"
+                    dataKey="revenue"
+                    fill={chartColors.navy}
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={36}
+                  />
+                  <Line
+                    yAxisId="cart"
+                    type="monotone"
+                    dataKey="cartons"
+                    stroke={chartColors.coral}
+                    strokeWidth={2}
+                    dot={{ r: 3, fill: chartColors.coral }}
+                  />
+                </ComposedChart>
+              </ChartContainer>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-[2px]"
+                    style={{ background: chartColors.navy }}
+                  />
+                  Revenue
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-[2px]"
+                    style={{ background: chartColors.coral }}
+                  />
+                  Cartons
+                </span>
+              </div>
+            </>
           )}
         </div>
 
@@ -644,23 +703,29 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="mx-auto aspect-square max-h-[220px] w-full rounded-xl" />
+            <RoundChartFrame>
+              <Skeleton className="size-full rounded-xl" />
+            </RoundChartFrame>
           ) : sales.length === 0 ? (
-            <div className="mx-auto flex aspect-square max-h-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
-              No sales to score
-            </div>
+            <RoundChartFrame>
+              <div className="flex size-full items-center justify-center rounded-xl bg-muted/40 text-center text-sm text-muted-foreground">
+                No sales to score
+              </div>
+            </RoundChartFrame>
           ) : (
-            <div className="relative mx-auto aspect-square max-h-[220px] w-full overflow-hidden">
+            <RoundChartFrame>
               <ChartContainer
                 config={proofConfig}
-                className="!aspect-square h-full max-h-none w-full"
+                className="!aspect-auto size-full max-h-none"
+                initialDimension={{ width: 200, height: 200 }}
               >
                 <RadialBarChart
                   data={proofRadial}
                   startAngle={90}
                   endAngle={-270}
-                  innerRadius="68%"
-                  outerRadius="100%"
+                  innerRadius="64%"
+                  outerRadius="86%"
+                  margin={{ top: 8, right: 8, bottom: 8, left: 8 }}
                 >
                   <RadialBar
                     dataKey="value"
@@ -677,16 +742,16 @@ export default function ReportsPage() {
                   />
                 </RadialBarChart>
               </ChartContainer>
-              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                <p className="text-2xl font-semibold tabular-nums">
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-2">
+                <p className="text-xl font-semibold tabular-nums sm:text-2xl">
                   {salesKpis.proofPct}%
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-center text-[11px] leading-tight text-muted-foreground sm:text-xs">
                   {formatNumber(salesKpis.withProof)} /{" "}
                   {formatNumber(sales.length)}
                 </p>
               </div>
-            </div>
+            </RoundChartFrame>
           )}
         </div>
       </div>
@@ -702,16 +767,16 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[240px] w-full rounded-xl sm:aspect-[4/3] sm:h-auto" />
+            <Skeleton className="h-[220px] w-full rounded-xl sm:h-[280px]" />
           ) : !(stats?.storeBreakdown?.length) ? (
-            <div className="flex h-[240px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:aspect-[4/3] sm:h-auto">
+            <div className="flex h-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:h-[280px]">
               No store data
             </div>
           ) : (
             <>
               <ChartContainer
                 config={storeConfig}
-                className="!aspect-auto h-[240px] w-full sm:aspect-[4/3] sm:h-auto"
+                className="!aspect-auto h-[220px] w-full max-w-full sm:h-[280px]"
               >
                 <BarChart
                   data={stats.storeBreakdown}
@@ -793,71 +858,88 @@ export default function ReportsPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[260px] w-full rounded-xl sm:aspect-[4/3] sm:h-auto" />
+            <Skeleton className="h-[230px] w-full rounded-xl sm:h-[300px]" />
           ) : !(stats?.brandBreakdown?.length) ? (
-            <div className="flex h-[260px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:aspect-[4/3] sm:h-auto">
+            <div className="flex h-[230px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground sm:h-[300px]">
               No brand data
             </div>
           ) : (
-            <ChartContainer
-              config={brandConfig}
-              className="!aspect-auto h-[260px] w-full sm:aspect-[4/3] sm:h-auto"
-            >
-              <ComposedChart
-                data={stats.brandBreakdown.slice(0, 8)}
-                margin={{ top: 8, left: 0, right: 4, bottom: 28 }}
+            <>
+              <ChartContainer
+                config={brandConfig}
+                className="!aspect-auto h-[230px] w-full max-w-full sm:h-[300px]"
               >
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-28}
-                  textAnchor="end"
-                  interval={0}
-                  height={48}
-                  tickMargin={4}
-                  tickFormatter={(v) =>
-                    String(v).length > 8
-                      ? `${String(v).slice(0, 8)}…`
-                      : String(v)
-                  }
-                />
-                <YAxis
-                  yAxisId="rev"
-                  tickLine={false}
-                  axisLine={false}
-                  width={36}
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-                  }
-                />
-                <YAxis
-                  yAxisId="cart"
-                  orientation="right"
-                  tickLine={false}
-                  axisLine={false}
-                  width={28}
-                />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar
-                  yAxisId="rev"
-                  dataKey="revenue"
-                  fill={chartColors.navy}
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={32}
-                />
-                <Line
-                  yAxisId="cart"
-                  type="monotone"
-                  dataKey="cartons"
-                  stroke={chartColors.coral}
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: chartColors.coral }}
-                />
-                <ChartLegend content={<ChartLegendContent />} />
-              </ComposedChart>
-            </ChartContainer>
+                <ComposedChart
+                  data={stats.brandBreakdown.slice(0, 8)}
+                  margin={{ top: 8, left: 0, right: 2, bottom: 36 }}
+                >
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tickLine={false}
+                    axisLine={false}
+                    angle={-28}
+                    textAnchor="end"
+                    interval={0}
+                    height={52}
+                    tickMargin={4}
+                    tickFormatter={(v) =>
+                      String(v).length > 8
+                        ? `${String(v).slice(0, 8)}…`
+                        : String(v)
+                    }
+                  />
+                  <YAxis
+                    yAxisId="rev"
+                    tickLine={false}
+                    axisLine={false}
+                    width={32}
+                    tickFormatter={(v) =>
+                      v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
+                    }
+                  />
+                  <YAxis
+                    yAxisId="cart"
+                    orientation="right"
+                    tickLine={false}
+                    axisLine={false}
+                    width={24}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar
+                    yAxisId="rev"
+                    dataKey="revenue"
+                    fill={chartColors.navy}
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={32}
+                  />
+                  <Line
+                    yAxisId="cart"
+                    type="monotone"
+                    dataKey="cartons"
+                    stroke={chartColors.coral}
+                    strokeWidth={2}
+                    dot={{ r: 3, fill: chartColors.coral }}
+                  />
+                </ComposedChart>
+              </ChartContainer>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-[2px]"
+                    style={{ background: chartColors.navy }}
+                  />
+                  Revenue
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-[2px]"
+                    style={{ background: chartColors.coral }}
+                  />
+                  Cartons
+                </span>
+              </div>
+            </>
           )}
         </div>
       </div>
