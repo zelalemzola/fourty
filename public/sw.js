@@ -29,8 +29,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || "Fourty", {
       body: data.body || "New update",
-      icon: "/icons/icon.svg",
-      badge: "/icons/icon.svg",
+      icon: "/favicon.ico",
+      badge: "/favicon.ico",
       tag: data.type || "fourty",
       renotify: true,
       data: { url: data.url || "/app/notifications" },
