@@ -41,9 +41,9 @@ export function ShareBars({
               : formatNumber(item.value);
         return (
           <li key={item.name} className="space-y-1.5">
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="truncate text-sm font-medium">{item.name}</span>
-              <span className="shrink-0 font-figure text-sm tabular-nums text-muted-foreground">
+            <div className="flex min-w-0 items-baseline justify-between gap-3">
+              <span className="min-w-0 truncate text-sm font-medium">{item.name}</span>
+              <span className="shrink-0 font-figure text-xs tabular-nums text-muted-foreground sm:text-sm">
                 {display}
                 <span className="ml-1.5 text-[11px]">{pct.toFixed(0)}%</span>
               </span>

@@ -77,9 +77,9 @@ export default function AppLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="min-w-0 overflow-x-hidden">
         <AppTopBar />
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-4 pb-[5.5rem] sm:px-5 sm:py-5 md:pb-6">
+        <main className="mx-auto w-full min-w-0 max-w-7xl flex-1 overflow-x-hidden px-4 py-4 pb-[5.5rem] sm:px-5 sm:py-5 md:pb-6">
           <PushPermissionBanner />
           {children}
         </main>

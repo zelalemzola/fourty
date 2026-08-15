@@ -195,7 +195,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-5 sm:space-y-6">
+    <div className="min-w-0 space-y-5 overflow-x-hidden sm:space-y-6">
       <PageHeader
         title="Dashboard"
         description="Live sales, stock health, and store performance across Fourty."
@@ -213,7 +213,7 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="-mx-1 overflow-x-auto pb-1 sm:mx-0">
+      <div className="min-w-0">
         <GlobalFilters showStore={profile?.role === "owner"} />
       </div>
 
@@ -330,8 +330,8 @@ export default function DashboardPage() {
         </KpiGrid>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-5">
-        <div className="panel p-4 sm:p-5 lg:col-span-3">
+      <div className="grid min-w-0 gap-5 lg:grid-cols-5">
+        <div className="panel min-w-0 p-4 sm:p-5 lg:col-span-3">
           <div className="mb-4">
             <h2 className="font-heading text-base font-semibold sm:text-sm">
               Revenue vs cartons
@@ -342,17 +342,20 @@ export default function DashboardPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-[16/10] w-full rounded-lg sm:aspect-video" />
+            <Skeleton className="h-[200px] w-full rounded-lg sm:h-[260px]" />
           ) : trendRows.length === 0 ? (
-            <div className="flex aspect-[16/10] items-center justify-center rounded-lg bg-muted text-sm text-muted-foreground sm:aspect-video">
+            <div className="flex h-[200px] items-center justify-center rounded-lg bg-muted text-sm text-muted-foreground sm:h-[260px]">
               No sales in this period
             </div>
           ) : (
             <ChartContainer
               config={trendConfig}
-              className="aspect-[16/10] w-full sm:aspect-video"
+              className="h-[200px] w-full sm:h-[260px]"
             >
-              <ComposedChart data={trendRows} margin={{ left: 0, right: 4 }}>
+              <ComposedChart
+                data={trendRows}
+                margin={{ top: 8, right: 4, left: 0, bottom: 0 }}
+              >
                 <defs>
                   <linearGradient id="fillRevenueDash" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={chartColors.navy} stopOpacity={0.3} />
@@ -372,7 +375,8 @@ export default function DashboardPage() {
                   yAxisId="rev"
                   tickLine={false}
                   axisLine={false}
-                  width={48}
+                  width={32}
+                  tick={{ fontSize: 10 }}
                   tickFormatter={(v) =>
                     v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
                   }
@@ -382,7 +386,8 @@ export default function DashboardPage() {
                   orientation="right"
                   tickLine={false}
                   axisLine={false}
-                  width={36}
+                  width={24}
+                  tick={{ fontSize: 10 }}
                 />
                 <ChartTooltip
                   content={
@@ -420,7 +425,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="panel p-4 sm:p-5 lg:col-span-2">
+        <div className="panel min-w-0 p-4 sm:p-5 lg:col-span-2">
           <div className="mb-4">
             <h2 className="font-heading text-base font-semibold sm:text-sm">Brand mix</h2>
             <p className="text-xs text-muted-foreground">
@@ -434,10 +439,10 @@ export default function DashboardPage() {
               No brand data
             </p>
           ) : (
-            <>
+            <div className="space-y-4">
               <ChartContainer
                 config={pieConfig}
-                className="mx-auto aspect-square max-h-[240px] w-full sm:max-h-[280px]"
+                className="mx-auto h-[200px] w-full max-w-[220px]"
               >
                 <PieChart>
                   <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
@@ -445,8 +450,8 @@ export default function DashboardPage() {
                     data={brandDonut}
                     dataKey="value"
                     nameKey="name"
-                    innerRadius={58}
-                    outerRadius={90}
+                    innerRadius="58%"
+                    outerRadius="82%"
                     strokeWidth={2}
                     paddingAngle={2}
                   >
@@ -457,21 +462,20 @@ export default function DashboardPage() {
                 </PieChart>
               </ChartContainer>
               <ShareBars
-                className="mt-3"
                 items={brandDonut.map((b) => ({
                   name: b.name,
                   value: b.value,
                   color: b.fill,
                 }))}
               />
-            </>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="panel p-4 sm:p-5">
-          <div className="mb-3">
+      <div className="grid min-w-0 gap-5 lg:grid-cols-3">
+        <div className="panel min-w-0 p-4 sm:p-5">
+          <div className="mb-4">
             <h2 className="font-heading text-sm font-semibold">
               Brand performance
             </h2>
@@ -480,20 +484,32 @@ export default function DashboardPage() {
             </p>
           </div>
           {isLoading || !brandRows.length ? (
-            <Skeleton className="h-[240px] w-full rounded-lg" />
+            <Skeleton className="h-[220px] w-full rounded-lg" />
           ) : (
-            <ChartContainer config={brandConfig} className="h-[240px] w-full">
-              <BarChart data={brandRows} margin={{ left: 0, right: 8 }}>
+            <ChartContainer config={brandConfig} className="h-[220px] w-full">
+              <BarChart
+                data={brandRows}
+                margin={{ top: 8, right: 4, left: 0, bottom: 4 }}
+              >
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis
                   dataKey="name"
                   tickLine={false}
                   axisLine={false}
+                  tick={{ fontSize: 10 }}
                   tickFormatter={(v) =>
-                    String(v).length > 8 ? `${String(v).slice(0, 8)}…` : String(v)
+                    String(v).length > 6 ? `${String(v).slice(0, 6)}…` : String(v)
                   }
                 />
-                <YAxis tickLine={false} axisLine={false} width={40} />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  width={28}
+                  tick={{ fontSize: 10 }}
+                  tickFormatter={(v) =>
+                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
+                  }
+                />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="revenue" fill={chartColors.navy} radius={[4, 4, 0, 0]} />
                 <Bar dataKey="cartons" fill={chartColors.coral} radius={[4, 4, 0, 0]} />
@@ -503,8 +519,8 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="panel p-4 sm:p-5">
-          <div className="mb-3">
+        <div className="panel min-w-0 p-4 sm:p-5">
+          <div className="mb-4">
             <h2 className="font-heading text-sm font-semibold">
               Store radar
             </h2>
@@ -516,9 +532,9 @@ export default function DashboardPage() {
             <Skeleton className="h-[240px] w-full rounded-lg" />
           ) : (
             <ChartContainer config={storeRadarConfig} className="h-[240px] w-full">
-              <RadarChart data={storeRadar}>
+              <RadarChart data={storeRadar} cx="50%" cy="48%" outerRadius="62%">
                 <PolarGrid />
-                <PolarAngleAxis dataKey="name" tick={{ fontSize: 10 }} />
+                <PolarAngleAxis dataKey="name" tick={{ fontSize: 9 }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Radar
                   dataKey="revenue"
@@ -538,7 +554,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="panel p-4 sm:p-5">
+        <div className="panel min-w-0 p-4 sm:p-5">
           <div className="mb-4">
             <h2 className="font-heading text-base font-semibold sm:text-sm">
               Stock health
@@ -548,18 +564,18 @@ export default function DashboardPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="mx-auto h-[200px] w-full rounded-lg sm:h-[240px]" />
+            <Skeleton className="mx-auto h-[200px] w-full rounded-lg sm:h-[220px]" />
           ) : (
             <ChartContainer
               config={healthConfig}
-              className="mx-auto h-[200px] w-full sm:h-[240px]"
+              className="mx-auto h-[200px] w-full sm:h-[220px]"
             >
               <RadialBarChart
                 data={stockHealth}
                 startAngle={180}
                 endAngle={0}
                 innerRadius="55%"
-                outerRadius="100%"
+                outerRadius="88%"
               >
                 <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
                 <RadialBar
@@ -582,7 +598,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="panel space-y-4 p-4 sm:p-5">
+      <div className="panel min-w-0 space-y-4 p-4 sm:p-5">
         <div>
           <h2 className="font-heading text-sm font-semibold">By store</h2>
           <p className="text-xs text-muted-foreground">

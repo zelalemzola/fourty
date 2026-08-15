@@ -18,7 +18,7 @@ export function KpiGrid({
   return (
     <div
       className={cn(
-        "grid grid-cols-2 gap-3 sm:gap-4",
+        "grid min-w-0 grid-cols-2 gap-2.5 sm:gap-4",
         cols === 3 && "lg:grid-cols-3",
         cols === 4 && "xl:grid-cols-4",
         cols === 5 && "xl:grid-cols-5",
@@ -143,11 +143,11 @@ export function KpiCard({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-lg border p-4 shadow-sm",
+        "relative min-w-0 overflow-hidden rounded-lg border p-3 shadow-sm sm:p-4",
         "shadow-[0_1px_2px_rgba(15,23,42,0.04),0_6px_16px_rgba(15,23,42,0.05)]",
         "dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_6px_16px_rgba(0,0,0,0.28)]",
         fills[fill],
-        featured && "col-span-2 xl:col-span-1",
+        featured && "col-span-2 min-h-[8.25rem] py-5 xl:col-span-1 sm:min-h-0 sm:py-4",
         className
       )}
     >
@@ -168,15 +168,15 @@ export function KpiCard({
         )}
       />
 
-      <div className="relative z-10 flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+      <div className="relative z-10 min-w-0 pr-9">
+        <div className="min-w-0">
           <p className={cn("text-[11px] font-medium tracking-wide", muted)}>
             {title}
           </p>
           <p
             className={cn(
-              "mt-1.5 truncate font-figure font-semibold leading-none tracking-tight",
-              featured ? "text-[1.75rem]" : "text-xl sm:text-[1.35rem]"
+              "mt-1.5 font-figure font-semibold leading-tight tracking-tight break-words [overflow-wrap:anywhere]",
+              featured ? "text-[1.65rem] sm:text-[1.75rem]" : "text-[1.05rem] sm:text-[1.35rem]"
             )}
           >
             {value}
@@ -207,7 +207,7 @@ export function KpiCard({
         </div>
         <div
           className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-md",
+            "absolute right-2.5 top-2.5 z-10 flex size-7 shrink-0 items-center justify-center rounded-md sm:size-8",
             iconBox[fill]
           )}
         >
