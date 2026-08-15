@@ -232,10 +232,7 @@ export default function SalesPage() {
               <Download data-icon="inline-start" />
               Export
             </Button>
-            <Button
-              className="hidden sm:inline-flex"
-              render={<Link href="/app/sales/new" />}
-            >
+            <Button render={<Link href="/app/sales/new" />}>
               <Plus data-icon="inline-start" />
               New sale
             </Button>
@@ -243,43 +240,31 @@ export default function SalesPage() {
         }
       />
 
-      <div className="flex items-center gap-2">
-        <div className="min-w-0 flex-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <GlobalFilters showStore={profile?.role === "owner"}>
-            <CompactSelect
-              icon={Package}
-              label="Brand"
-              value={brandId}
-              onChange={setBrandId}
-              options={[
-                { value: "all", label: "All brands" },
-                ...brands
-                  .filter((b) => b.is_active)
-                  .map((b) => ({ value: b.id, label: b.name })),
-              ]}
-            />
-            <CompactSelect
-              icon={Layers}
-              label="Channel"
-              value={channel}
-              onChange={setChannel}
-              options={[
-                { value: "all", label: "All channels" },
-                { value: "store", label: "Store" },
-                { value: "subagent", label: "Subagent" },
-              ]}
-            />
-          </GlobalFilters>
-        </div>
-        <Button
-          size="sm"
-          className="h-8 shrink-0 px-2.5 text-xs sm:hidden"
-          render={<Link href="/app/sales/new" />}
-        >
-          <Plus data-icon="inline-start" />
-          New sale
-        </Button>
-      </div>
+      <GlobalFilters showStore={profile?.role === "owner"}>
+        <CompactSelect
+          icon={Package}
+          label="Brand"
+          value={brandId}
+          onChange={setBrandId}
+          options={[
+            { value: "all", label: "All brands" },
+            ...brands
+              .filter((b) => b.is_active)
+              .map((b) => ({ value: b.id, label: b.name })),
+          ]}
+        />
+        <CompactSelect
+          icon={Layers}
+          label="Channel"
+          value={channel}
+          onChange={setChannel}
+          options={[
+            { value: "all", label: "All channels" },
+            { value: "store", label: "Store" },
+            { value: "subagent", label: "Subagent" },
+          ]}
+        />
+      </GlobalFilters>
 
       {isLoading ? (
         <KpiGrid>

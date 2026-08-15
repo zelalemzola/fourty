@@ -225,7 +225,7 @@ export default function StoresPage() {
         icon={StoreIcon}
         actions={
           <>
-            <Button variant="outline" onClick={handleExport}>
+            <Button variant="outline" onClick={handleExport} className="hidden sm:inline-flex">
               <Download className="size-4" />
               Export
             </Button>

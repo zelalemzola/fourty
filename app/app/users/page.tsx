@@ -371,6 +371,7 @@ export default function UsersPage() {
               variant="outline"
               onClick={handleExport}
               disabled={!filtered.length}
+              className="hidden sm:inline-flex"
             >
               <Download className="size-4" />
               Export

@@ -305,7 +305,7 @@ export default function InventoryPage() {
         actions={
           <>
             {isOwner && (
-              <Button variant="outline" onClick={openMinSheet}>
+              <Button variant="outline" size="sm" onClick={openMinSheet}>
                 <Settings2 className="size-4" />
                 Set min stock
               </Button>

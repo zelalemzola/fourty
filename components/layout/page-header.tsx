@@ -12,7 +12,7 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="mb-1 flex flex-col gap-3 sm:mb-0 sm:flex-row sm:items-start sm:justify-between">
+    <div className="mb-1 flex items-center justify-between gap-3 sm:mb-0 sm:items-start">
       <div className="flex min-w-0 items-start gap-3">
         {Icon && (
           <div className="mt-0.5 hidden size-10 shrink-0 items-center justify-center rounded-lg border border-border/80 bg-card text-muted-foreground shadow-sm sm:flex">
@@ -20,7 +20,7 @@ export function PageHeader({
           </div>
         )}
         <div className="min-w-0">
-          <h1 className="font-heading text-[1.65rem] font-semibold leading-tight tracking-tight sm:text-xl">
+          <h1 className="truncate font-heading text-[1.45rem] font-semibold leading-tight tracking-tight sm:text-xl">
             {title}
           </h1>
           {description && (
@@ -31,7 +31,7 @@ export function PageHeader({
         </div>
       </div>
       {actions && (
-        <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">
+        <div className="flex shrink-0 items-center justify-end gap-2 max-sm:[&_button]:h-8 max-sm:[&_button]:px-2.5 max-sm:[&_button]:text-xs">
           {actions}
         </div>
       )}

@@ -136,7 +136,7 @@ export function AppSidebar() {
         <NavGroup label="Insights" items={filter(insightNav)} unread={unread} role={role} />
       </SidebarContent>
 
-      <SidebarFooter className="overflow-visible border-t border-sidebar-border px-3 py-3 font-sans group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:py-2">
+      <SidebarFooter className="overflow-visible border-t border-sidebar-border px-3 pt-3 pb-3 font-sans group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:py-2 max-md:pb-[calc(2.75rem+env(safe-area-inset-bottom,0px))]">
         {!collapsed && (
           <div className="mb-1.5 rounded-lg bg-sidebar-accent/60 px-3 py-2">
             <p className="truncate font-heading text-sm font-semibold text-sidebar-foreground">
