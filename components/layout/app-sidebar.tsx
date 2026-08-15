@@ -136,9 +136,9 @@ export function AppSidebar() {
         <NavGroup label="Insights" items={filter(insightNav)} unread={unread} role={role} />
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border font-sans">
+      <SidebarFooter className="overflow-visible border-t border-sidebar-border px-3 py-3 font-sans group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:py-2">
         {!collapsed && (
-          <div className="mx-1 mb-1 rounded-lg bg-sidebar-accent/60 px-2.5 py-2">
+          <div className="mb-1.5 rounded-lg bg-sidebar-accent/60 px-3 py-2">
             <p className="truncate font-heading text-sm font-semibold text-sidebar-foreground">
               {profile?.full_name || "…"}
             </p>
@@ -153,11 +153,9 @@ export function AppSidebar() {
             <SidebarMenuButton
               tooltip="Sign out"
               onClick={logout}
-              className="border border-transparent bg-sidebar-primary font-sans text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground active:bg-sidebar-primary/80 active:text-sidebar-primary-foreground"
+              className="h-9 overflow-visible px-3 font-sans bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground active:bg-sidebar-primary/80 active:text-sidebar-primary-foreground"
             >
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-sidebar-primary-foreground/15">
-                <LogOut className="size-3.5" />
-              </span>
+              <LogOut className="size-4" />
               <span className="font-medium">Sign out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

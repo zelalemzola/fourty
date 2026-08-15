@@ -421,3 +421,32 @@ with check (true);
 
 -- Seed helper note: create an owner via Auth, then:
 -- update public.profiles set role = 'owner' where email = 'owner@fourty.com';
+
+-- Live updates (also in realtime.sql — safe to re-run)
+do $$
+declare
+  t text;
+begin
+  foreach t in array array[
+    'profiles',
+    'stores',
+    'brands',
+    'inventory',
+    'restocks',
+    'subagent_batches',
+    'sales',
+    'notifications',
+    'audit_logs'
+  ]
+  loop
+    begin
+      execute format(
+        'alter publication supabase_realtime add table public.%I',
+        t
+      );
+    exception
+      when duplicate_object then null;
+      when undefined_table then null;
+    end;
+  end loop;
+end $$;

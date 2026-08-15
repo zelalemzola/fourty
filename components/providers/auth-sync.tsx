@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { createClient } from "@/lib/supabase/client";
 import { setProfile, clearAuth } from "@/store/slices/authSlice";
 import { useGetMyProfileQuery } from "@/store/api/fourtyApi";
+import { RealtimeSync } from "@/components/providers/realtime-sync";
 import type { AppDispatch } from "@/store";
 
 export function AuthSync({ children }: { children: React.ReactNode }) {
@@ -29,5 +30,10 @@ export function AuthSync({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [dispatch, refetch]);
 
-  return <>{children}</>;
+  return (
+    <>
+      <RealtimeSync />
+      {children}
+    </>
+  );
 }

@@ -39,6 +39,8 @@ async function uploadScreenshot(file: File, saleId: string) {
 export const fourtyApi = createApi({
   reducerPath: "fourtyApi",
   baseQuery: fakeBaseQuery(),
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   tagTypes: [
     "Profile",
     "Stores",

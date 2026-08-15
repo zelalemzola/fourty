@@ -110,3 +110,4 @@ with check (
 drop policy if exists "remittances_update" on public.remittances;
 create policy "remittances_update" on public.remittances for update to authenticated
 using (public.is_owner() or store_id = public.current_store_id());
+
