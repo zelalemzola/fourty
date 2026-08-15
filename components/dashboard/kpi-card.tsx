@@ -147,7 +147,8 @@ export function KpiCard({
         "shadow-[0_1px_2px_rgba(15,23,42,0.04),0_6px_16px_rgba(15,23,42,0.05)]",
         "dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_6px_16px_rgba(0,0,0,0.28)]",
         fills[fill],
-        featured && "col-span-2 min-h-[8.25rem] py-5 xl:col-span-1 sm:min-h-0 sm:py-4",
+        featured &&
+          "col-span-2 flex min-h-[11.5rem] flex-col py-6 shadow-[0_4px_10px_rgba(15,23,42,0.08),0_14px_32px_rgba(194,65,12,0.22)] xl:col-span-1 dark:shadow-[0_4px_10px_rgba(0,0,0,0.35),0_14px_32px_rgba(0,0,0,0.5)] sm:block sm:min-h-0 sm:py-4 sm:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_6px_16px_rgba(15,23,42,0.05)] sm:dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_6px_16px_rgba(0,0,0,0.28)]",
         className
       )}
     >
@@ -163,20 +164,34 @@ export function KpiCard({
       <Icon
         aria-hidden
         className={cn(
-          "pointer-events-none absolute -bottom-2 -right-1 size-16 stroke-[1.15]",
+          "pointer-events-none absolute -bottom-2 -right-1 stroke-[1.15]",
+          featured ? "size-24 sm:size-16" : "size-16",
           inverted ? "text-current/15" : "text-current opacity-[0.12]"
         )}
       />
 
-      <div className="relative z-10 min-w-0 pr-9">
-        <div className="min-w-0">
-          <p className={cn("text-[11px] font-medium tracking-wide", muted)}>
-            {title}
-          </p>
+      <div
+        className={cn(
+          "relative z-10 min-w-0",
+          featured ? "flex min-h-0 flex-1 flex-col pr-14 sm:block sm:flex-none sm:pr-9" : "pr-9"
+        )}
+      >
+        <p
+          className={cn(
+            "font-medium tracking-wide",
+            featured ? "text-[13px] sm:text-[11px]" : "text-[11px]",
+            muted
+          )}
+        >
+          {title}
+        </p>
+        <div className={cn("min-w-0", featured && "mt-auto pt-8 sm:mt-0 sm:pt-0")}>
           <p
             className={cn(
-              "mt-1.5 font-figure font-semibold leading-tight tracking-tight break-words [overflow-wrap:anywhere]",
-              featured ? "text-[1.65rem] sm:text-[1.75rem]" : "text-[1.05rem] sm:text-[1.35rem]"
+              "font-figure font-semibold leading-tight tracking-tight break-words [overflow-wrap:anywhere]",
+              featured
+                ? "mt-1.5 text-[1.65rem] sm:text-[1.75rem]"
+                : "mt-1.5 text-[1.05rem] sm:text-[1.35rem]"
             )}
           >
             {value}
@@ -207,11 +222,12 @@ export function KpiCard({
         </div>
         <div
           className={cn(
-            "absolute right-2.5 top-2.5 z-10 flex size-7 shrink-0 items-center justify-center rounded-md sm:size-8",
+            "absolute right-2.5 top-2.5 z-10 flex shrink-0 items-center justify-center rounded-md",
+            featured ? "size-11 sm:size-8" : "size-7 sm:size-8",
             iconBox[fill]
           )}
         >
-          <Icon className="size-4" />
+          <Icon className={featured ? "size-5 sm:size-4" : "size-4"} />
         </div>
       </div>
     </div>

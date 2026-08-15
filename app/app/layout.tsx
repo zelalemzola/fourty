@@ -19,12 +19,6 @@ function AppTopBar() {
   const profile = useSelector((s: RootState) => s.auth.profile);
   const { data: notifications = [] } = useGetNotificationsQuery();
   const unread = notifications.filter((n) => !n.is_read).length;
-  const initials = (profile?.full_name || "F")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join("");
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-border/80 bg-background/90 px-3 backdrop-blur-md supports-backdrop-filter:bg-background/75 sm:h-12 sm:px-4">
@@ -47,7 +41,7 @@ function AppTopBar() {
       <div className="flex shrink-0 items-center gap-1.5">
         <Link
           href="/app/notifications"
-          className="relative inline-flex size-9 items-center justify-center rounded-md border border-border/80 bg-card text-muted-foreground shadow-sm active:bg-muted"
+          className="relative inline-flex size-9 items-center justify-center rounded-full border border-border/80 bg-card text-muted-foreground shadow-sm active:bg-muted"
           aria-label="Notifications"
         >
           <Bell className="size-4" />
@@ -57,13 +51,7 @@ function AppTopBar() {
             </span>
           )}
         </Link>
-        <ModeToggle className="hidden size-9 rounded-md sm:inline-flex" collapsed />
-        <div
-          className="flex size-9 items-center justify-center rounded-full border border-border/80 bg-primary text-[11px] font-semibold text-primary-foreground md:hidden"
-          aria-hidden
-        >
-          {initials || "40"}
-        </div>
+        <ModeToggle className="size-9 rounded-full" collapsed />
       </div>
     </header>
   );
