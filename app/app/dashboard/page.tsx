@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import {
   Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -218,6 +217,21 @@ export default function DashboardPage() {
         <GlobalFilters showStore={profile?.role === "owner"} />
       </div>
 
+      {isLoading ? (
+        <Skeleton className="h-[108px] rounded-lg sm:hidden" />
+      ) : (
+        <div className="sm:hidden">
+          <KpiCard
+            title="Revenue"
+            value={formatCurrency(data?.totalRevenue || 0)}
+            icon={Wallet}
+            trend={data?.revenueChange}
+            tone="accent"
+            featured
+          />
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-2 sm:hidden">
         <Link
           href="/app/sales/new"
@@ -269,7 +283,7 @@ export default function DashboardPage() {
             trend={data?.revenueChange}
             tone="accent"
             featured
-            className="xl:col-span-1"
+            className="hidden sm:block xl:col-span-1"
           />
           <KpiCard
             title="Cartons sold"
@@ -334,48 +348,11 @@ export default function DashboardPage() {
               No sales in this period
             </div>
           ) : (
-            <>
-              <ChartContainer
-                config={trendConfig}
-                className="aspect-[16/10] w-full md:hidden"
-              >
-                <AreaChart data={trendRows} margin={{ left: 0, right: 4, top: 8 }}>
-                  <defs>
-                    <linearGradient id="fillRevenueMobile" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={chartColors.navy} stopOpacity={0.35} />
-                      <stop offset="95%" stopColor={chartColors.navy} stopOpacity={0.02} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    minTickGap={36}
-                    tickFormatter={(v) => formatDate(v, "MMM d")}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(v) => formatDate(String(v))}
-                      />
-                    }
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke={chartColors.navy}
-                    fill="url(#fillRevenueMobile)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ChartContainer>
-              <ChartContainer
-                config={trendConfig}
-                className="hidden aspect-video w-full md:flex"
-              >
-              <ComposedChart data={trendRows} margin={{ left: 4, right: 8 }}>
+            <ChartContainer
+              config={trendConfig}
+              className="aspect-[16/10] w-full sm:aspect-video"
+            >
+              <ComposedChart data={trendRows} margin={{ left: 0, right: 4 }}>
                 <defs>
                   <linearGradient id="fillRevenueDash" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={chartColors.navy} stopOpacity={0.3} />
@@ -440,7 +417,6 @@ export default function DashboardPage() {
                 <ChartLegend content={<ChartLegendContent />} />
               </ComposedChart>
             </ChartContainer>
-            </>
           )}
         </div>
 
@@ -459,17 +435,9 @@ export default function DashboardPage() {
             </p>
           ) : (
             <>
-              <ShareBars
-                className="md:hidden"
-                items={brandDonut.map((b) => ({
-                  name: b.name,
-                  value: b.value,
-                  color: b.fill,
-                }))}
-              />
               <ChartContainer
                 config={pieConfig}
-                className="mx-auto hidden aspect-square max-h-[280px] w-full md:flex"
+                className="mx-auto aspect-square max-h-[240px] w-full sm:max-h-[280px]"
               >
                 <PieChart>
                   <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
@@ -488,13 +456,21 @@ export default function DashboardPage() {
                   </Pie>
                 </PieChart>
               </ChartContainer>
+              <ShareBars
+                className="mt-3"
+                items={brandDonut.map((b) => ({
+                  name: b.name,
+                  value: b.value,
+                  color: b.fill,
+                }))}
+              />
             </>
           )}
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="panel hidden p-4 sm:p-5 md:block">
+        <div className="panel p-4 sm:p-5">
           <div className="mb-3">
             <h2 className="font-heading text-sm font-semibold">
               Brand performance
@@ -527,7 +503,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="panel hidden p-4 sm:p-5 md:block">
+        <div className="panel p-4 sm:p-5">
           <div className="mb-3">
             <h2 className="font-heading text-sm font-semibold">
               Store radar
@@ -572,29 +548,12 @@ export default function DashboardPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="h-16 w-full rounded-lg" />
+            <Skeleton className="mx-auto h-[200px] w-full rounded-lg sm:h-[240px]" />
           ) : (
-            <>
-              <div className="md:hidden">
-                <div className="flex items-end justify-between gap-3">
-                  <p className="font-figure text-3xl font-semibold tracking-tight">
-                    {stockHealth[0]?.value ?? 0}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatNumber(data?.lowStockCount || 0)} SKUs low
-                  </p>
-                </div>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-accent"
-                    style={{ width: `${stockHealth[0]?.value ?? 0}%` }}
-                  />
-                </div>
-              </div>
-              <ChartContainer
-                config={healthConfig}
-                className="mx-auto hidden h-[240px] w-full md:flex"
-              >
+            <ChartContainer
+              config={healthConfig}
+              className="mx-auto h-[200px] w-full sm:h-[240px]"
+            >
               <RadialBarChart
                 data={stockHealth}
                 startAngle={180}
@@ -619,7 +578,6 @@ export default function DashboardPage() {
                 </text>
               </RadialBarChart>
             </ChartContainer>
-            </>
           )}
         </div>
       </div>

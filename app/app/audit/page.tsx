@@ -171,7 +171,7 @@ export default function AuditPage() {
           title="Events"
           value={formatNumber(kpis.total)}
           icon={Activity}
-          tone="accent"
+          featured
         />
         <KpiCard
           title="Unique actors"

@@ -184,7 +184,7 @@ export default function AdjustmentsPage() {
       <GlobalFilters showDate={false} />
 
       <KpiGrid cols={3}>
-        <KpiCard title="Total adjustments" value={formatNumber(adjustments.length)} icon={SlidersHorizontal} fill="navySoft" />
+        <KpiCard title="Total adjustments" value={formatNumber(adjustments.length)} icon={SlidersHorizontal} featured />
         <KpiCard title="Positive" value={formatNumber(positives)} icon={SlidersHorizontal} tone="success" />
         <KpiCard title="Negative" value={formatNumber(negatives)} icon={SlidersHorizontal} tone="warn" />
       </KpiGrid>

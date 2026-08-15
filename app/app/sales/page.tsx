@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import {
   Area,
-  AreaChart,
   Bar,
   CartesianGrid,
   Cell,
@@ -45,7 +44,6 @@ import {
   rowClickProps,
 } from "@/components/table/row-details-dialog";
 import { KpiCard, KpiGrid } from "@/components/dashboard/kpi-card";
-import { ShareBars } from "@/components/dashboard/share-bars";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -234,7 +232,10 @@ export default function SalesPage() {
               <Download data-icon="inline-start" />
               Export
             </Button>
-            <Button className="flex-1 sm:flex-none" render={<Link href="/app/sales/new" />}>
+            <Button
+              className="hidden sm:inline-flex"
+              render={<Link href="/app/sales/new" />}
+            >
               <Plus data-icon="inline-start" />
               New sale
             </Button>
@@ -242,31 +243,43 @@ export default function SalesPage() {
         }
       />
 
-      <GlobalFilters showStore={profile?.role === "owner"}>
-        <CompactSelect
-          icon={Package}
-          label="Brand"
-          value={brandId}
-          onChange={setBrandId}
-          options={[
-            { value: "all", label: "All brands" },
-            ...brands
-              .filter((b) => b.is_active)
-              .map((b) => ({ value: b.id, label: b.name })),
-          ]}
-        />
-        <CompactSelect
-          icon={Layers}
-          label="Channel"
-          value={channel}
-          onChange={setChannel}
-          options={[
-            { value: "all", label: "All channels" },
-            { value: "store", label: "Store" },
-            { value: "subagent", label: "Subagent" },
-          ]}
-        />
-      </GlobalFilters>
+      <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <GlobalFilters showStore={profile?.role === "owner"}>
+            <CompactSelect
+              icon={Package}
+              label="Brand"
+              value={brandId}
+              onChange={setBrandId}
+              options={[
+                { value: "all", label: "All brands" },
+                ...brands
+                  .filter((b) => b.is_active)
+                  .map((b) => ({ value: b.id, label: b.name })),
+              ]}
+            />
+            <CompactSelect
+              icon={Layers}
+              label="Channel"
+              value={channel}
+              onChange={setChannel}
+              options={[
+                { value: "all", label: "All channels" },
+                { value: "store", label: "Store" },
+                { value: "subagent", label: "Subagent" },
+              ]}
+            />
+          </GlobalFilters>
+        </div>
+        <Button
+          size="sm"
+          className="h-8 shrink-0 px-2.5 text-xs sm:hidden"
+          render={<Link href="/app/sales/new" />}
+        >
+          <Plus data-icon="inline-start" />
+          New sale
+        </Button>
+      </div>
 
       {isLoading ? (
         <KpiGrid>
@@ -321,56 +334,11 @@ export default function SalesPage() {
               No daily volume in view
             </div>
           ) : (
-            <>
-              <ChartContainer
-                config={volumeConfig}
-                className="aspect-[16/10] w-full md:hidden"
-              >
-                <AreaChart data={dailyVolume} margin={{ left: 0, right: 4, top: 8 }}>
-                  <defs>
-                    <linearGradient id="salesRevFillMobile" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor={chartColors.navy}
-                        stopOpacity={0.35}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor={chartColors.navy}
-                        stopOpacity={0.02}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    minTickGap={36}
-                    tickFormatter={(v) => formatDate(v, "MMM d")}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(v) => formatDate(String(v))}
-                      />
-                    }
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke={chartColors.navy}
-                    fill="url(#salesRevFillMobile)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ChartContainer>
-              <ChartContainer
-                config={volumeConfig}
-                className="hidden aspect-video w-full md:flex"
-              >
-              <ComposedChart data={dailyVolume} margin={{ left: 4, right: 8 }}>
+            <ChartContainer
+              config={volumeConfig}
+              className="aspect-[16/10] w-full sm:aspect-video"
+            >
+              <ComposedChart data={dailyVolume} margin={{ left: 0, right: 4 }}>
                 <defs>
                   <linearGradient id="salesRevFill" x1="0" y1="0" x2="0" y2="1">
                     <stop
@@ -435,7 +403,6 @@ export default function SalesPage() {
                 <ChartLegend content={<ChartLegendContent />} />
               </ComposedChart>
             </ChartContainer>
-            </>
           )}
         </div>
 
@@ -456,17 +423,9 @@ export default function SalesPage() {
             </p>
           ) : (
             <>
-              <ShareBars
-                className="md:hidden"
-                items={channelMix.map((c, i) => ({
-                  name: c.name,
-                  value: c.value,
-                  color: CHANNEL_COLORS[i % CHANNEL_COLORS.length],
-                }))}
-              />
               <ChartContainer
                 config={channelConfig}
-                className="mx-auto hidden aspect-square max-h-[240px] w-full md:flex"
+                className="mx-auto aspect-square max-h-[220px] w-full sm:max-h-[240px]"
               >
                 <PieChart>
                   <ChartTooltip
@@ -493,7 +452,7 @@ export default function SalesPage() {
                   </Pie>
                 </PieChart>
               </ChartContainer>
-              <ul className="mt-2 hidden space-y-1 text-sm md:block">
+              <ul className="mt-2 space-y-1 text-sm">
                 {channelMix.map((c, i) => (
                   <li key={c.name} className="flex justify-between gap-2">
                     <span className="flex items-center gap-2">

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import {
   Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -48,7 +47,6 @@ import {
   rowClickProps,
 } from "@/components/table/row-details-dialog";
 import { KpiCard, KpiGrid } from "@/components/dashboard/kpi-card";
-import { ShareBars } from "@/components/dashboard/share-bars";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -419,61 +417,13 @@ export default function ReportsPage() {
               No daily sales in this period
             </div>
           ) : (
-            <>
-              <ChartContainer
-                config={trendConfig}
-                className="aspect-[16/10] w-full md:hidden"
-              >
-                <AreaChart
-                  data={stats.salesTrend}
-                  margin={{ left: 0, right: 4, top: 8 }}
-                >
-                  <defs>
-                    <linearGradient id="rptRevenueMobile" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor={chartColors.navy}
-                        stopOpacity={0.35}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor={chartColors.navy}
-                        stopOpacity={0.02}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    minTickGap={36}
-                    tickFormatter={(v) => formatDate(v, "MMM d")}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(v) => formatDate(String(v))}
-                      />
-                    }
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke={chartColors.navy}
-                    fill="url(#rptRevenueMobile)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ChartContainer>
-              <ChartContainer
-                config={trendConfig}
-                className="hidden aspect-video w-full md:flex"
-              >
+            <ChartContainer
+              config={trendConfig}
+              className="aspect-[16/10] w-full sm:aspect-video"
+            >
               <ComposedChart
                 data={stats.salesTrend}
-                margin={{ left: 4, right: 8, top: 8, bottom: 0 }}
+                margin={{ left: 0, right: 4, top: 8, bottom: 0 }}
               >
                 <defs>
                   <linearGradient id="rptRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -546,9 +496,8 @@ export default function ReportsPage() {
                 />
               </ComposedChart>
             </ChartContainer>
-            </>
           )}
-          <div className="mt-2 hidden flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground md:flex">
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <span
                 className="size-2 rounded-[2px]"
@@ -583,17 +532,9 @@ export default function ReportsPage() {
             </p>
           ) : (
             <>
-              <ShareBars
-                className="md:hidden"
-                items={channelMix.map((c, i) => ({
-                  name: c.name,
-                  value: c.value,
-                  color: CHANNEL_COLORS[i % CHANNEL_COLORS.length],
-                }))}
-              />
               <ChartContainer
                 config={channelConfig}
-                className="mx-auto hidden aspect-square max-h-[220px] w-full md:flex"
+                className="mx-auto aspect-square max-h-[220px] w-full"
               >
                 <PieChart>
                   <ChartTooltip
@@ -620,7 +561,7 @@ export default function ReportsPage() {
                   </Pie>
                 </PieChart>
               </ChartContainer>
-              <ul className="mt-2 hidden space-y-1 text-sm md:block">
+              <ul className="mt-2 space-y-1 text-sm">
                 {channelMix.map((c, i) => (
                   <li key={c.name} className="flex justify-between gap-2">
                     <span className="flex min-w-0 items-center gap-2">
@@ -660,18 +601,10 @@ export default function ReportsPage() {
               No sellers in view
             </p>
           ) : (
-            <>
-              <ShareBars
-                className="md:hidden"
-                items={topSellers.slice(0, 6).map((s) => ({
-                  name: s.name,
-                  value: s.revenue,
-                }))}
-              />
-              <ChartContainer
-                config={sellerConfig}
-                className="hidden aspect-video w-full md:flex"
-              >
+            <ChartContainer
+              config={sellerConfig}
+              className="aspect-[16/10] w-full sm:aspect-video"
+            >
               <ComposedChart
                 data={topSellerChart}
                 margin={{ left: 4, right: 8, top: 8, bottom: 4 }}
@@ -723,9 +656,8 @@ export default function ReportsPage() {
                 />
               </ComposedChart>
             </ChartContainer>
-            </>
           )}
-          <div className="mt-2 hidden flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground md:flex">
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <span
                 className="size-2 rounded-[2px]"
@@ -759,25 +691,7 @@ export default function ReportsPage() {
               No sales to score
             </p>
           ) : (
-            <>
-              <div className="md:hidden">
-                <div className="flex items-end justify-between gap-3">
-                  <p className="font-figure text-3xl font-semibold tracking-tight">
-                    {salesKpis.proofPct}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatNumber(salesKpis.withProof)} /{" "}
-                    {formatNumber(sales.length)} with proof
-                  </p>
-                </div>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-accent"
-                    style={{ width: `${salesKpis.proofPct}%` }}
-                  />
-                </div>
-              </div>
-              <div className="relative mx-auto hidden aspect-square max-h-[220px] w-full max-w-[220px] md:block">
+            <div className="relative mx-auto aspect-square max-h-[220px] w-full max-w-[220px]">
               <ChartContainer
                 config={proofConfig}
                 className="aspect-square h-full w-full"
@@ -814,7 +728,6 @@ export default function ReportsPage() {
                 </p>
               </div>
             </div>
-            </>
           )}
         </div>
       </div>
@@ -837,16 +750,9 @@ export default function ReportsPage() {
             </p>
           ) : (
             <>
-              <ShareBars
-                className="md:hidden"
-                items={stats.storeBreakdown.map((s) => ({
-                  name: s.name,
-                  value: s.revenue,
-                }))}
-              />
               <ChartContainer
                 config={storeConfig}
-                className="hidden aspect-[4/3] w-full md:flex"
+                className="aspect-[4/3] w-full"
               >
                 <BarChart
                   data={stats.storeBreakdown}
@@ -937,16 +843,9 @@ export default function ReportsPage() {
             </p>
           ) : (
             <>
-              <ShareBars
-                className="md:hidden"
-                items={stats.brandBreakdown.slice(0, 8).map((b) => ({
-                  name: b.name,
-                  value: b.revenue,
-                }))}
-              />
               <ChartContainer
                 config={brandConfig}
-                className="hidden aspect-[4/3] w-full md:flex"
+                className="aspect-[4/3] w-full"
               >
               <ComposedChart
                 data={stats.brandBreakdown.slice(0, 8)}
@@ -1003,7 +902,7 @@ export default function ReportsPage() {
             </ChartContainer>
             </>
           )}
-          <div className="mt-2 hidden flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground md:flex">
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <span
                 className="size-2 rounded-[2px]"

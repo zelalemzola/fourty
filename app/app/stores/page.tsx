@@ -242,7 +242,7 @@ export default function StoresPage() {
           title="Total stores"
           value={formatNumber(kpis.total)}
           icon={Building2}
-          fill="navySoft"
+          featured
         />
         <KpiCard
           title="Active"

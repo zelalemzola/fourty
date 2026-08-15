@@ -31,7 +31,14 @@ export function KpiGrid({
 }
 
 type KpiTone = "default" | "warn" | "success" | "accent";
-export type KpiFill = "surface" | "navy" | "navySoft" | "coral" | "warn" | "success";
+export type KpiFill =
+  | "surface"
+  | "navy"
+  | "navySoft"
+  | "coral"
+  | "coralSolid"
+  | "warn"
+  | "success";
 type KpiPattern = "hatch" | "dots" | "rings" | "grid" | "wave" | "arcs";
 
 const PATTERNS: KpiPattern[] = [
@@ -55,7 +62,7 @@ function resolveFill(
   title: string,
   fill?: KpiFill
 ): KpiFill {
-  if (featured) return "navy";
+  if (featured) return "coralSolid";
   if (fill) return fill;
   if (tone === "accent") return "coral";
   if (tone === "warn") return "warn";
@@ -68,6 +75,7 @@ function resolvePattern(
   title: string
 ): KpiPattern {
   if (fill === "navy") return "rings";
+  if (fill === "coralSolid") return "rings";
   if (fill === "coral") return "hatch";
   if (fill === "warn") return "dots";
   if (fill === "success") return "grid";
@@ -98,24 +106,26 @@ export function KpiCard({
 }) {
   const fill = resolveFill(tone, featured, title, fillProp);
   const pattern = resolvePattern(fill, title);
-  const inverted = fill === "navy";
+  const inverted = fill === "navy" || fill === "coralSolid";
 
   const fills: Record<KpiFill, string> = {
     surface: "border-border/80 bg-card",
     navySoft: "border-primary/20 bg-primary/10",
     navy: "border-transparent bg-primary text-primary-foreground",
     coral: "border-accent/25 bg-accent/10",
+    coralSolid: "border-transparent bg-accent text-accent-foreground",
     warn: "border-amber-500/25 bg-amber-500/10",
     success: "border-emerald-500/25 bg-emerald-500/10",
   };
 
   const patternColor: Record<KpiFill, string> = {
-    surface: "text-primary/[0.055]",
-    navySoft: "text-primary/[0.07]",
-    navy: "text-primary-foreground/[0.08]",
-    coral: "text-accent/[0.09]",
-    warn: "text-amber-800/[0.08] dark:text-amber-200/[0.09]",
-    success: "text-emerald-800/[0.08] dark:text-emerald-200/[0.09]",
+    surface: "text-primary/18",
+    navySoft: "text-primary/20",
+    navy: "text-primary-foreground/20",
+    coral: "text-accent/22",
+    coralSolid: "text-accent-foreground/22",
+    warn: "text-amber-800/18 dark:text-amber-200/20",
+    success: "text-emerald-800/18 dark:text-emerald-200/20",
   };
 
   const iconBox: Record<KpiFill, string> = {
@@ -123,13 +133,12 @@ export function KpiCard({
     navySoft: "bg-primary/12 text-primary",
     navy: "bg-primary-foreground/15 text-primary-foreground",
     coral: "bg-accent/15 text-accent",
+    coralSolid: "bg-accent-foreground/15 text-accent-foreground",
     warn: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
     success: "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300",
   };
 
-  const muted = inverted
-    ? "text-primary-foreground/75"
-    : "text-muted-foreground";
+  const muted = inverted ? "text-current/75" : "text-muted-foreground";
 
   return (
     <div
@@ -151,6 +160,13 @@ export function KpiCard({
       >
         <KpiArt kind={pattern} />
       </div>
+      <Icon
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute -bottom-2 -right-1 size-16 stroke-[1.15]",
+          inverted ? "text-current/15" : "text-current opacity-[0.12]"
+        )}
+      />
 
       <div className="relative z-10 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -173,7 +189,7 @@ export function KpiCard({
               className={cn(
                 "mt-2 inline-flex items-center gap-0.5 text-xs font-medium",
                 inverted
-                  ? "text-primary-foreground/85"
+                  ? "text-current/85"
                   : trend >= 0
                     ? "text-emerald-700 dark:text-emerald-400"
                     : "text-destructive"
@@ -212,18 +228,18 @@ function KpiArt({ kind }: { kind: KpiPattern }) {
         <defs>
           <pattern
             id={pid}
-            width="12"
-            height="12"
+            width="9"
+            height="9"
             patternUnits="userSpaceOnUse"
-            patternTransform="rotate(28)"
+            patternTransform="rotate(32)"
           >
             <line
               x1="0"
               y1="0"
               x2="0"
-              y2="12"
+              y2="9"
               stroke="currentColor"
-              strokeWidth="0.7"
+              strokeWidth="1"
             />
           </pattern>
         </defs>
@@ -236,8 +252,8 @@ function KpiArt({ kind }: { kind: KpiPattern }) {
     return (
       <svg className="size-full" aria-hidden>
         <defs>
-          <pattern id={pid} width="14" height="14" patternUnits="userSpaceOnUse">
-            <circle cx="1" cy="1" r="0.7" fill="currentColor" />
+          <pattern id={pid} width="11" height="11" patternUnits="userSpaceOnUse">
+            <circle cx="1.2" cy="1.2" r="1" fill="currentColor" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${pid})`} />
@@ -249,12 +265,12 @@ function KpiArt({ kind }: { kind: KpiPattern }) {
     return (
       <svg className="size-full" aria-hidden>
         <defs>
-          <pattern id={pid} width="16" height="16" patternUnits="userSpaceOnUse">
+          <pattern id={pid} width="14" height="14" patternUnits="userSpaceOnUse">
             <path
-              d="M16 0H0V16"
+              d="M14 0H0V14"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.6"
+              strokeWidth="0.85"
             />
           </pattern>
         </defs>
@@ -266,14 +282,15 @@ function KpiArt({ kind }: { kind: KpiPattern }) {
   if (kind === "rings") {
     return (
       <svg
-        className="absolute -right-5 -top-6 size-24"
+        className="absolute -right-4 -top-5 size-28"
         viewBox="0 0 120 120"
         fill="none"
         aria-hidden
       >
-        <circle cx="60" cy="60" r="50" stroke="currentColor" strokeWidth="1.25" />
-        <circle cx="60" cy="60" r="34" stroke="currentColor" strokeWidth="1.25" />
-        <circle cx="60" cy="60" r="18" stroke="currentColor" strokeWidth="1.25" />
+        <circle cx="60" cy="60" r="16" fill="currentColor" opacity="0.35" />
+        <circle cx="60" cy="60" r="28" stroke="currentColor" strokeWidth="2" />
+        <circle cx="60" cy="60" r="44" stroke="currentColor" strokeWidth="1.75" />
+        <circle cx="60" cy="60" r="58" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     );
   }
@@ -281,16 +298,21 @@ function KpiArt({ kind }: { kind: KpiPattern }) {
   if (kind === "wave") {
     return (
       <svg
-        className="absolute inset-x-0 bottom-0 h-10"
-        viewBox="0 0 160 32"
+        className="absolute inset-x-0 bottom-0 h-[58%]"
+        viewBox="0 0 160 70"
         preserveAspectRatio="none"
-        fill="none"
         aria-hidden
       >
         <path
-          d="M0 20 C28 8 44 26 72 16 C100 6 124 22 160 12"
+          d="M0 38 C24 22 44 52 70 34 C96 16 118 10 160 28 V70 H0 Z"
+          fill="currentColor"
+          opacity="0.45"
+        />
+        <path
+          d="M0 38 C24 22 44 52 70 34 C96 16 118 10 160 28"
+          fill="none"
           stroke="currentColor"
-          strokeWidth="1.15"
+          strokeWidth="1.6"
         />
       </svg>
     );
@@ -298,25 +320,30 @@ function KpiArt({ kind }: { kind: KpiPattern }) {
 
   return (
     <svg
-      className="absolute -bottom-6 -right-5 size-24"
+      className="absolute -bottom-5 -right-4 size-28"
       viewBox="0 0 120 120"
       fill="none"
       aria-hidden
     >
       <path
-        d="M120 120 A88 88 0 0 0 32 120"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        d="M120 120 A92 92 0 0 0 28 120"
+        fill="currentColor"
+        opacity="0.2"
       />
       <path
-        d="M120 120 A62 62 0 0 0 58 120"
+        d="M120 120 A92 92 0 0 0 28 120"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="2"
+      />
+      <path
+        d="M120 120 A64 64 0 0 0 56 120"
+        stroke="currentColor"
+        strokeWidth="2"
       />
       <path
         d="M120 120 A36 36 0 0 0 84 120"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="2"
       />
     </svg>
   );

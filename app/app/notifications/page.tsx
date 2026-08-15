@@ -102,7 +102,7 @@ export default function NotificationsPage() {
           title="Unread"
           value={formatNumber(kpis.unread)}
           icon={Bell}
-          tone={kpis.unread > 0 ? "accent" : "success"}
+          featured
         />
         <KpiCard
           title="Read"

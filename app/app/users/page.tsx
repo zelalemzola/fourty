@@ -388,7 +388,7 @@ export default function UsersPage() {
           title="Team size"
           value={formatNumber(kpis.total)}
           icon={Users}
-          fill="navySoft"
+          featured
         />
         <KpiCard
           title="Active"

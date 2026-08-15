@@ -271,7 +271,7 @@ export default function BrandsPage() {
           title="Total brands"
           value={formatNumber(kpis.total)}
           icon={Package}
-          fill="navySoft"
+          featured
         />
         <KpiCard
           title="Active"
