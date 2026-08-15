@@ -222,9 +222,9 @@ export default function CloseoutPage() {
       <GlobalFilters showDate={false} />
 
       <KpiGrid>
-        <KpiCard title="Today sales" value={formatCurrency(dayStats.amount)} icon={ClipboardCheck} />
-        <KpiCard title="Cartons sold" value={formatNumber(dayStats.cartons)} icon={ClipboardCheck} />
-        <KpiCard title="Transactions" value={formatNumber(dayStats.tx)} icon={ClipboardCheck} />
+        <KpiCard title="Today sales" value={formatCurrency(dayStats.amount)} icon={ClipboardCheck} featured />
+        <KpiCard title="Cartons sold" value={formatNumber(dayStats.cartons)} icon={ClipboardCheck} fill="navySoft" />
+        <KpiCard title="Transactions" value={formatNumber(dayStats.tx)} icon={ClipboardCheck} fill="coral" />
         <KpiCard title="SKUs on hand" value={formatNumber(dayStats.skus)} icon={ClipboardCheck} />
       </KpiGrid>
 
@@ -381,22 +381,19 @@ export default function CloseoutPage() {
                 </TableBody>
               </Table>
             </div>
-            <ul className="space-y-2 md:hidden">
+            <ul className="space-y-3 md:hidden">
               {pager.pageItems.map((c) => {
                 const actions = closeoutActions(c);
                 return (
                   <MobileRowCard
                     key={c.id}
                     onClick={() => setDetailsCloseout(c)}
+                    title={c.stores?.name || "Closeout"}
+                    trailing={formatCurrency(Number(c.total_sales_amount))}
                     fields={[
-                      { label: "Store", value: c.stores?.name || "—" },
                       {
                         label: "Date",
                         value: formatDate(c.closeout_date),
-                      },
-                      {
-                        label: "Sales",
-                        value: formatCurrency(Number(c.total_sales_amount)),
                       },
                       {
                         label: "Status",

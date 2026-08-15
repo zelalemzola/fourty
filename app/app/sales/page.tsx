@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import {
   Area,
+  AreaChart,
   Bar,
   CartesianGrid,
   Cell,
@@ -44,6 +45,7 @@ import {
   rowClickProps,
 } from "@/components/table/row-details-dialog";
 import { KpiCard, KpiGrid } from "@/components/dashboard/kpi-card";
+import { ShareBars } from "@/components/dashboard/share-bars";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -227,11 +229,12 @@ export default function SalesPage() {
               variant="outline"
               onClick={handleExport}
               disabled={!sales.length}
+              className="hidden sm:inline-flex"
             >
               <Download data-icon="inline-start" />
               Export
             </Button>
-            <Button render={<Link href="/app/sales/new" />}>
+            <Button className="flex-1 sm:flex-none" render={<Link href="/app/sales/new" />}>
               <Plus data-icon="inline-start" />
               New sale
             </Button>
@@ -278,12 +281,14 @@ export default function SalesPage() {
             value={formatCurrency(kpis.revenue)}
             icon={Wallet}
             tone="accent"
+            featured
             hint={isFetching ? "Refreshing…" : undefined}
           />
           <KpiCard
             title="Cartons"
             value={formatNumber(kpis.cartons)}
             icon={Package}
+            fill="navySoft"
           />
           <KpiCard
             title="Transactions"
@@ -294,26 +299,77 @@ export default function SalesPage() {
             title="Avg ticket"
             value={formatCurrency(kpis.avgTicket)}
             icon={ShoppingCart}
+            fill="coral"
           />
         </KpiGrid>
       )}
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <div className="panel p-3 sm:p-4 lg:col-span-3">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold">Daily sales volume</h2>
+        <div className="panel p-4 sm:p-5 lg:col-span-3">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Daily sales volume
+            </h2>
             <p className="text-xs text-muted-foreground">
-              Revenue area and carton bars for the filtered set
+              Revenue trend for the filtered set
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-video w-full rounded-xl" />
+            <Skeleton className="aspect-[16/10] w-full rounded-lg sm:aspect-video" />
           ) : dailyVolume.length === 0 ? (
-            <div className="flex aspect-video items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <div className="flex aspect-[16/10] items-center justify-center rounded-lg bg-muted/40 text-sm text-muted-foreground sm:aspect-video">
               No daily volume in view
             </div>
           ) : (
-            <ChartContainer config={volumeConfig} className="aspect-video w-full">
+            <>
+              <ChartContainer
+                config={volumeConfig}
+                className="aspect-[16/10] w-full md:hidden"
+              >
+                <AreaChart data={dailyVolume} margin={{ left: 0, right: 4, top: 8 }}>
+                  <defs>
+                    <linearGradient id="salesRevFillMobile" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor={chartColors.navy}
+                        stopOpacity={0.35}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={chartColors.navy}
+                        stopOpacity={0.02}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    minTickGap={36}
+                    tickFormatter={(v) => formatDate(v, "MMM d")}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(v) => formatDate(String(v))}
+                      />
+                    }
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke={chartColors.navy}
+                    fill="url(#salesRevFillMobile)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ChartContainer>
+              <ChartContainer
+                config={volumeConfig}
+                className="hidden aspect-video w-full md:flex"
+              >
               <ComposedChart data={dailyVolume} margin={{ left: 4, right: 8 }}>
                 <defs>
                   <linearGradient id="salesRevFill" x1="0" y1="0" x2="0" y2="1">
@@ -379,27 +435,38 @@ export default function SalesPage() {
                 <ChartLegend content={<ChartLegendContent />} />
               </ComposedChart>
             </ChartContainer>
+            </>
           )}
         </div>
 
-        <div className="panel p-3 sm:p-4 lg:col-span-2">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold">Channel mix</h2>
+        <div className="panel p-4 sm:p-5 lg:col-span-2">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Channel mix
+            </h2>
             <p className="text-xs text-muted-foreground">
               Revenue share by channel
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="mx-auto aspect-square max-h-[240px] w-full rounded-xl" />
+            <Skeleton className="h-24 w-full rounded-lg md:mx-auto md:aspect-square md:max-h-[240px]" />
           ) : channelMix.length === 0 ? (
-            <div className="flex aspect-square max-h-[240px] mx-auto items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               No channel data
-            </div>
+            </p>
           ) : (
             <>
+              <ShareBars
+                className="md:hidden"
+                items={channelMix.map((c, i) => ({
+                  name: c.name,
+                  value: c.value,
+                  color: CHANNEL_COLORS[i % CHANNEL_COLORS.length],
+                }))}
+              />
               <ChartContainer
                 config={channelConfig}
-                className="mx-auto aspect-square max-h-[240px] w-full"
+                className="mx-auto hidden aspect-square max-h-[240px] w-full md:flex"
               >
                 <PieChart>
                   <ChartTooltip
@@ -426,7 +493,7 @@ export default function SalesPage() {
                   </Pie>
                 </PieChart>
               </ChartContainer>
-              <ul className="mt-2 space-y-1 text-sm">
+              <ul className="mt-2 hidden space-y-1 text-sm md:block">
                 {channelMix.map((c, i) => (
                   <li key={c.name} className="flex justify-between gap-2">
                     <span className="flex items-center gap-2">
@@ -449,7 +516,7 @@ export default function SalesPage() {
         </div>
       </div>
 
-      <div className="panel space-y-3 p-3 sm:p-4">
+      <div className="panel space-y-4 p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-sm font-semibold">Sale history</h2>
@@ -558,17 +625,14 @@ export default function SalesPage() {
               </Table>
             </div>
 
-            <ul className="space-y-2 lg:hidden">
+            <ul className="space-y-3 lg:hidden">
               {pager.pageItems.map((sale) => (
                 <MobileRowCard
                   key={sale.id}
                   onClick={() => setDetailsSale(sale)}
+                  title={sale.brands?.name || "—"}
+                  trailing={formatCurrency(Number(sale.total_amount))}
                   fields={[
-                    { label: "Brand", value: sale.brands?.name || "—" },
-                    {
-                      label: "Amount",
-                      value: formatCurrency(Number(sale.total_amount)),
-                    },
                     {
                       label: "Qty",
                       value: formatNumber(sale.quantity),
@@ -597,7 +661,6 @@ export default function SalesPage() {
                     {
                       label: "Date",
                       value: formatDateTime(sale.sold_at),
-                      fullWidth: true,
                     },
                   ]}
                   actions={<RowActions actions={saleActions(sale)} />}

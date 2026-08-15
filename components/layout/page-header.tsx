@@ -12,19 +12,19 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-start sm:justify-between">
-      <div className="flex min-w-0 items-start gap-2.5">
+    <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex min-w-0 items-start gap-3">
         {Icon && (
-          <div className="mt-0.5 shrink-0 rounded-lg border border-border bg-muted/80 p-2 text-muted-foreground shadow-sm">
-            <Icon className="size-4" />
+          <div className="mt-0.5 hidden size-10 shrink-0 items-center justify-center rounded-lg border border-border/80 bg-card text-muted-foreground shadow-sm sm:flex">
+            <Icon className="size-5" />
           </div>
         )}
         <div className="min-w-0">
-          <h1 className="font-heading text-lg font-semibold tracking-tight sm:text-xl">
+          <h1 className="font-heading text-[1.65rem] font-semibold leading-tight tracking-tight sm:text-xl">
             {title}
           </h1>
           {description && (
-            <p className="mt-0.5 max-w-2xl text-sm leading-snug text-muted-foreground">
+            <p className="mt-1 hidden max-w-2xl text-sm leading-snug text-muted-foreground sm:block">
               {description}
             </p>
           )}

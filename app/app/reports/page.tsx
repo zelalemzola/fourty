@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import {
   Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -47,6 +48,7 @@ import {
   rowClickProps,
 } from "@/components/table/row-details-dialog";
 import { KpiCard, KpiGrid } from "@/components/dashboard/kpi-card";
+import { ShareBars } from "@/components/dashboard/share-bars";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -330,6 +332,7 @@ export default function ReportsPage() {
             variant="outline"
             onClick={handleExport}
             disabled={!sales.length && !stats}
+            className="hidden sm:inline-flex"
           >
             <Download className="size-4" />
             Export Excel
@@ -353,12 +356,14 @@ export default function ReportsPage() {
             icon={Wallet}
             trend={stats?.revenueChange}
             tone="accent"
+            featured
           />
           <KpiCard
             title="Cartons sold"
             value={formatNumber(stats?.totalCartonsSold || salesKpis.cartons)}
             icon={Package}
             trend={stats?.salesChange}
+            fill="navySoft"
           />
           <KpiCard
             title="Transactions"
@@ -369,6 +374,7 @@ export default function ReportsPage() {
             title="Avg ticket"
             value={formatCurrency(salesKpis.avgTicket)}
             icon={ShoppingBag}
+            fill="coral"
           />
           <KpiCard
             title="Avg / carton"
@@ -380,6 +386,7 @@ export default function ReportsPage() {
             value={formatNumber(salesKpis.withProof)}
             icon={ImageIcon}
             hint={`${salesKpis.proofPct}% of sales`}
+            fill="navySoft"
           />
           <KpiCard
             title="Inventory value"
@@ -396,21 +403,74 @@ export default function ReportsPage() {
       )}
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <div className="panel min-w-0 p-3 sm:p-4 lg:col-span-3">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold">Daily breakdown</h2>
+        <div className="panel min-w-0 p-4 sm:p-5 lg:col-span-3">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Daily breakdown
+            </h2>
             <p className="text-xs text-muted-foreground">
               Revenue and cartons by day in the selected period
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-video w-full rounded-xl" />
+            <Skeleton className="aspect-[16/10] w-full rounded-lg sm:aspect-video" />
           ) : !(stats?.salesTrend?.length) ? (
-            <div className="flex aspect-video items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <div className="flex aspect-[16/10] items-center justify-center rounded-lg bg-muted/40 text-sm text-muted-foreground sm:aspect-video">
               No daily sales in this period
             </div>
           ) : (
-            <ChartContainer config={trendConfig} className="aspect-video w-full">
+            <>
+              <ChartContainer
+                config={trendConfig}
+                className="aspect-[16/10] w-full md:hidden"
+              >
+                <AreaChart
+                  data={stats.salesTrend}
+                  margin={{ left: 0, right: 4, top: 8 }}
+                >
+                  <defs>
+                    <linearGradient id="rptRevenueMobile" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor={chartColors.navy}
+                        stopOpacity={0.35}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={chartColors.navy}
+                        stopOpacity={0.02}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    minTickGap={36}
+                    tickFormatter={(v) => formatDate(v, "MMM d")}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(v) => formatDate(String(v))}
+                      />
+                    }
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke={chartColors.navy}
+                    fill="url(#rptRevenueMobile)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ChartContainer>
+              <ChartContainer
+                config={trendConfig}
+                className="hidden aspect-video w-full md:flex"
+              >
               <ComposedChart
                 data={stats.salesTrend}
                 margin={{ left: 4, right: 8, top: 8, bottom: 0 }}
@@ -486,8 +546,9 @@ export default function ReportsPage() {
                 />
               </ComposedChart>
             </ChartContainer>
+            </>
           )}
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <div className="mt-2 hidden flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground md:flex">
             <span className="inline-flex items-center gap-1.5">
               <span
                 className="size-2 rounded-[2px]"
@@ -505,87 +566,112 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className="panel min-w-0 p-3 sm:p-4 lg:col-span-2">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold">Channel mix</h2>
+        <div className="panel min-w-0 p-4 sm:p-5 lg:col-span-2">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Channel mix
+            </h2>
             <p className="text-xs text-muted-foreground">
               Revenue by store vs subagent channel
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="mx-auto aspect-square w-full max-w-[220px] rounded-xl" />
+            <Skeleton className="h-24 w-full rounded-lg md:mx-auto md:aspect-square md:max-w-[220px]" />
           ) : channelMix.length === 0 ? (
-            <div className="mx-auto flex aspect-square max-w-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               No channel data
-            </div>
+            </p>
           ) : (
-            <ChartContainer
-              config={channelConfig}
-              className="mx-auto aspect-square max-h-[220px] w-full"
-            >
-              <PieChart>
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(v) => formatCurrency(Number(v))}
-                    />
-                  }
-                />
-                <Pie
-                  data={channelMix}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={50}
-                  outerRadius={78}
-                  paddingAngle={3}
-                >
-                  {channelMix.map((_, i) => (
-                    <Cell
-                      key={i}
-                      fill={CHANNEL_COLORS[i % CHANNEL_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ChartContainer>
-          )}
-          <ul className="mt-2 space-y-1 text-sm">
-            {channelMix.map((c, i) => (
-              <li key={c.name} className="flex justify-between gap-2">
-                <span className="flex min-w-0 items-center gap-2">
-                  <span
-                    className="size-2.5 shrink-0 rounded-full"
-                    style={{
-                      background: CHANNEL_COLORS[i % CHANNEL_COLORS.length],
-                    }}
+            <>
+              <ShareBars
+                className="md:hidden"
+                items={channelMix.map((c, i) => ({
+                  name: c.name,
+                  value: c.value,
+                  color: CHANNEL_COLORS[i % CHANNEL_COLORS.length],
+                }))}
+              />
+              <ChartContainer
+                config={channelConfig}
+                className="mx-auto hidden aspect-square max-h-[220px] w-full md:flex"
+              >
+                <PieChart>
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        formatter={(v) => formatCurrency(Number(v))}
+                      />
+                    }
                   />
-                  <span className="truncate">{c.name}</span>
-                </span>
-                <span className="shrink-0 font-medium tabular-nums">
-                  {formatCurrency(c.value)}
-                </span>
-              </li>
-            ))}
-          </ul>
+                  <Pie
+                    data={channelMix}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={50}
+                    outerRadius={78}
+                    paddingAngle={3}
+                  >
+                    {channelMix.map((_, i) => (
+                      <Cell
+                        key={i}
+                        fill={CHANNEL_COLORS[i % CHANNEL_COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
+              <ul className="mt-2 hidden space-y-1 text-sm md:block">
+                {channelMix.map((c, i) => (
+                  <li key={c.name} className="flex justify-between gap-2">
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span
+                        className="size-2.5 shrink-0 rounded-full"
+                        style={{
+                          background: CHANNEL_COLORS[i % CHANNEL_COLORS.length],
+                        }}
+                      />
+                      <span className="truncate">{c.name}</span>
+                    </span>
+                    <span className="shrink-0 font-medium tabular-nums">
+                      {formatCurrency(c.value)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <div className="panel min-w-0 p-3 sm:p-4 lg:col-span-3">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold">Top sellers</h2>
+        <div className="panel min-w-0 p-4 sm:p-5 lg:col-span-3">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Top sellers
+            </h2>
             <p className="text-xs text-muted-foreground">
-              Revenue bars with carton line · navy / coral
+              Revenue share · carton counts on desktop
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-video w-full rounded-xl" />
+            <Skeleton className="h-32 w-full rounded-lg sm:aspect-video" />
           ) : topSellerChart.length === 0 ? (
-            <div className="flex aspect-video items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               No sellers in view
-            </div>
+            </p>
           ) : (
-            <ChartContainer config={sellerConfig} className="aspect-video w-full">
+            <>
+              <ShareBars
+                className="md:hidden"
+                items={topSellers.slice(0, 6).map((s) => ({
+                  name: s.name,
+                  value: s.revenue,
+                }))}
+              />
+              <ChartContainer
+                config={sellerConfig}
+                className="hidden aspect-video w-full md:flex"
+              >
               <ComposedChart
                 data={topSellerChart}
                 margin={{ left: 4, right: 8, top: 8, bottom: 4 }}
@@ -637,8 +723,9 @@ export default function ReportsPage() {
                 />
               </ComposedChart>
             </ChartContainer>
+            </>
           )}
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <div className="mt-2 hidden flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground md:flex">
             <span className="inline-flex items-center gap-1.5">
               <span
                 className="size-2 rounded-[2px]"
@@ -656,21 +743,41 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className="panel min-w-0 p-3 sm:p-4 lg:col-span-2">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold">Proof coverage</h2>
+        <div className="panel min-w-0 p-4 sm:p-5 lg:col-span-2">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Proof coverage
+            </h2>
             <p className="text-xs text-muted-foreground">
               Share of sales with screenshot proof
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="mx-auto aspect-square max-h-[220px] w-full rounded-xl" />
+            <Skeleton className="h-16 w-full rounded-lg md:mx-auto md:aspect-square md:max-h-[220px]" />
           ) : sales.length === 0 ? (
-            <div className="mx-auto flex aspect-square max-h-[220px] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               No sales to score
-            </div>
+            </p>
           ) : (
-            <div className="relative mx-auto aspect-square max-h-[220px] w-full max-w-[220px]">
+            <>
+              <div className="md:hidden">
+                <div className="flex items-end justify-between gap-3">
+                  <p className="font-figure text-3xl font-semibold tracking-tight">
+                    {salesKpis.proofPct}%
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatNumber(salesKpis.withProof)} /{" "}
+                    {formatNumber(sales.length)} with proof
+                  </p>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-accent"
+                    style={{ width: `${salesKpis.proofPct}%` }}
+                  />
+                </div>
+              </div>
+              <div className="relative mx-auto hidden aspect-square max-h-[220px] w-full max-w-[220px] md:block">
               <ChartContainer
                 config={proofConfig}
                 className="aspect-square h-full w-full"
@@ -707,29 +814,39 @@ export default function ReportsPage() {
                 </p>
               </div>
             </div>
+            </>
           )}
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="panel min-w-0 p-3 sm:p-4">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold">Store comparison</h2>
+        <div className="panel min-w-0 p-4 sm:p-5">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Store comparison
+            </h2>
             <p className="text-xs text-muted-foreground">
               Revenue across locations
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-[4/3] w-full rounded-xl" />
+            <Skeleton className="h-32 w-full rounded-lg sm:aspect-[4/3]" />
           ) : !(stats?.storeBreakdown?.length) ? (
-            <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               No store data
-            </div>
+            </p>
           ) : (
             <>
+              <ShareBars
+                className="md:hidden"
+                items={stats.storeBreakdown.map((s) => ({
+                  name: s.name,
+                  value: s.revenue,
+                }))}
+              />
               <ChartContainer
                 config={storeConfig}
-                className="aspect-[4/3] w-full"
+                className="hidden aspect-[4/3] w-full md:flex"
               >
                 <BarChart
                   data={stats.storeBreakdown}
@@ -758,7 +875,7 @@ export default function ReportsPage() {
                   />
                 </BarChart>
               </ChartContainer>
-              <div className="mt-3 hidden sm:block">
+              <div className="mt-3 hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -803,21 +920,34 @@ export default function ReportsPage() {
           )}
         </div>
 
-        <div className="panel min-w-0 p-3 sm:p-4">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold">Brand mix</h2>
+        <div className="panel min-w-0 p-4 sm:p-5">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Brand mix
+            </h2>
             <p className="text-xs text-muted-foreground">
-              Revenue and cartons by brand
+              Revenue share by brand
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-[4/3] w-full rounded-xl" />
+            <Skeleton className="h-32 w-full rounded-lg sm:aspect-[4/3]" />
           ) : !(stats?.brandBreakdown?.length) ? (
-            <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-muted/40 text-sm text-muted-foreground">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               No brand data
-            </div>
+            </p>
           ) : (
-            <ChartContainer config={brandConfig} className="aspect-[4/3] w-full">
+            <>
+              <ShareBars
+                className="md:hidden"
+                items={stats.brandBreakdown.slice(0, 8).map((b) => ({
+                  name: b.name,
+                  value: b.revenue,
+                }))}
+              />
+              <ChartContainer
+                config={brandConfig}
+                className="hidden aspect-[4/3] w-full md:flex"
+              >
               <ComposedChart
                 data={stats.brandBreakdown.slice(0, 8)}
                 margin={{ left: 4, right: 8, bottom: 40, top: 8 }}
@@ -871,8 +1001,9 @@ export default function ReportsPage() {
                 />
               </ComposedChart>
             </ChartContainer>
+            </>
           )}
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <div className="mt-2 hidden flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground md:flex">
             <span className="inline-flex items-center gap-1.5">
               <span
                 className="size-2 rounded-[2px]"
@@ -891,9 +1022,11 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      <div className="panel p-3 sm:p-4">
-        <div className="mb-3">
-          <h2 className="text-sm font-semibold">Seller leaderboard</h2>
+      <div className="panel p-4 sm:p-5">
+        <div className="mb-4">
+          <h2 className="font-heading text-base font-semibold sm:text-sm">
+            Seller leaderboard
+          </h2>
           <p className="text-xs text-muted-foreground">
             Highest revenue contributors in this period
           </p>
@@ -903,20 +1036,21 @@ export default function ReportsPage() {
             No sellers in view
           </p>
         ) : (
-          <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {topSellers.map((s, idx) => (
               <li
                 key={s.name}
-                className="rounded-xl border border-border/60 bg-background/50 px-3 py-2.5"
+                className="rounded-lg border border-border/70 bg-background/60 px-4 py-3.5"
               >
-                <p className="text-xs text-muted-foreground">#{idx + 1}</p>
-                <p className="truncate font-medium">{s.name}</p>
-                <p className="mt-1 text-sm">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  #{idx + 1}
+                </p>
+                <p className="mt-1 truncate text-[15px] font-semibold">{s.name}</p>
+                <p className="mt-1.5 font-figure text-sm font-semibold tabular-nums">
                   {formatCurrency(s.revenue)}
-                  <span className="text-muted-foreground">
-                    {" "}
-                    · {formatNumber(s.cartons)} ctns
-                  </span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatNumber(s.cartons)} cartons
                 </p>
               </li>
             ))}
@@ -924,10 +1058,10 @@ export default function ReportsPage() {
         )}
       </div>
 
-      <div className="panel p-3 sm:p-4">
-        <div className="mb-3 flex items-center justify-between gap-2">
+      <div className="panel p-4 sm:p-5">
+        <div className="mb-4 flex items-center justify-between gap-2">
           <div>
-            <h2 className="text-sm font-semibold">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
               Sale screenshots
             </h2>
             <p className="text-xs text-muted-foreground">
@@ -973,9 +1107,9 @@ export default function ReportsPage() {
         )}
       </div>
 
-      <div className="panel space-y-3 p-3 sm:p-4">
+      <div className="panel space-y-4 p-4 sm:p-5">
         <div>
-          <h2 className="text-sm font-semibold">
+          <h2 className="font-heading text-base font-semibold sm:text-sm">
             Transaction detail
           </h2>
           <p className="text-xs text-muted-foreground">
@@ -1062,17 +1196,14 @@ export default function ReportsPage() {
                 </TableBody>
               </Table>
             </div>
-            <ul className="space-y-2 lg:hidden">
+            <ul className="space-y-3 lg:hidden">
               {salesPager.pageItems.map((s) => (
                 <MobileRowCard
                   key={s.id}
                   onClick={() => setDetailsSale(s)}
+                  title={s.brands?.name || "—"}
+                  trailing={formatCurrency(Number(s.total_amount))}
                   fields={[
-                    { label: "Brand", value: s.brands?.name || "—" },
-                    {
-                      label: "Amount",
-                      value: formatCurrency(Number(s.total_amount)),
-                    },
                     {
                       label: "Channel",
                       value: (

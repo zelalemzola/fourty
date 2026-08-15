@@ -184,7 +184,7 @@ export default function AdjustmentsPage() {
       <GlobalFilters showDate={false} />
 
       <KpiGrid cols={3}>
-        <KpiCard title="Total adjustments" value={formatNumber(adjustments.length)} icon={SlidersHorizontal} />
+        <KpiCard title="Total adjustments" value={formatNumber(adjustments.length)} icon={SlidersHorizontal} fill="navySoft" />
         <KpiCard title="Positive" value={formatNumber(positives)} icon={SlidersHorizontal} tone="success" />
         <KpiCard title="Negative" value={formatNumber(negatives)} icon={SlidersHorizontal} tone="warn" />
       </KpiGrid>
@@ -334,18 +334,15 @@ export default function AdjustmentsPage() {
                 </TableBody>
               </Table>
             </div>
-            <ul className="space-y-2 md:hidden">
+            <ul className="space-y-3 md:hidden">
               {pager.pageItems.map((a) => (
                 <MobileRowCard
                   key={a.id}
                   onClick={() => setDetailsAdj(a)}
+                  title={a.brands?.name || "—"}
+                  trailing={`${a.quantity_delta > 0 ? "+" : ""}${a.quantity_delta}`}
                   fields={[
-                    { label: "Brand", value: a.brands?.name || "—" },
                     { label: "Store", value: a.stores?.name || "—" },
-                    {
-                      label: "Delta",
-                      value: `${a.quantity_delta > 0 ? "+" : ""}${a.quantity_delta}`,
-                    },
                     {
                       label: "Reason",
                       value: (

@@ -9,21 +9,27 @@ export type DetailField = {
   fullWidth?: boolean;
 };
 
-/** Mobile list card with explicit column labels + optional click for details. */
+/** Mobile list card — title + trailing value, then labeled fields. */
 export function MobileRowCard({
   fields,
   onClick,
   actions,
   className,
   eyebrow,
+  title,
+  trailing,
 }: {
   fields: DetailField[];
   onClick?: () => void;
   actions?: ReactNode;
   className?: string;
   eyebrow?: ReactNode;
+  title?: ReactNode;
+  trailing?: ReactNode;
 }) {
   const clickable = Boolean(onClick);
+  const heading = title ?? fields[0]?.value;
+  const rest = title ? fields : fields.slice(1);
 
   return (
     <li
@@ -45,37 +51,42 @@ export function MobileRowCard({
             onClick();
           }
         }}
-        className="space-y-2.5"
+        className="space-y-3"
       >
-        {eyebrow && <div className="text-xs text-muted-foreground">{eyebrow}</div>}
+        {eyebrow && (
+          <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            {eyebrow}
+          </div>
+        )}
 
-        {/* Column legend */}
-        <div className="flex flex-wrap gap-x-2 gap-y-0.5 border-b border-border/50 pb-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-          {fields.map((f) => (
-            <span key={f.label}>{f.label}</span>
-          ))}
+        <div className="flex items-start justify-between gap-3">
+          <p className="min-w-0 truncate text-[15px] font-semibold leading-snug">
+            {heading ?? "—"}
+          </p>
+          {trailing != null && (
+            <p className="shrink-0 font-figure text-sm font-semibold tabular-nums">
+              {trailing}
+            </p>
+          )}
         </div>
 
-        <dl className="grid grid-cols-2 gap-x-3 gap-y-2">
-          {fields.map((f) => (
-            <div
-              key={f.label}
-              className={cn(f.fullWidth && "col-span-2")}
-            >
-              <dt className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                {f.label}
-              </dt>
-              <dd className="mt-0.5 truncate text-sm font-medium text-foreground">
-                {f.value ?? "—"}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        {rest.length > 0 && (
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+            {rest.map((f) => (
+              <div key={f.label} className={cn(f.fullWidth && "col-span-2")}>
+                <dt className="text-[11px] text-muted-foreground">{f.label}</dt>
+                <dd className="mt-0.5 truncate text-sm font-medium text-foreground">
+                  {f.value ?? "—"}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </div>
 
       {actions && (
         <div
-          className="mt-2.5 flex justify-end border-t border-border/50 pt-2"
+          className="mt-3 flex justify-end border-t border-border/60 pt-2.5"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         >

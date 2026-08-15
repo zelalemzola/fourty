@@ -176,7 +176,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/15 bg-card/92 p-6 shadow-xl backdrop-blur-md sm:p-7 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
+            <div className="rounded-lg border border-white/15 bg-card/92 p-6 shadow-xl backdrop-blur-md sm:p-7 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
               <div className="mb-6 hidden lg:block">
                 <div className="mb-5 h-1 w-10 rounded-full bg-accent" />
                 <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">

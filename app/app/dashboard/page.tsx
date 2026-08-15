@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useSelector } from "react-redux";
 import {
   Area,
@@ -27,6 +28,7 @@ import {
   Download,
   LayoutDashboard,
   Package,
+  Plus,
   ShoppingBag,
   Store,
   Users,
@@ -46,6 +48,7 @@ import {
   rowClickProps,
 } from "@/components/table/row-details-dialog";
 import { KpiCard, KpiGrid } from "@/components/dashboard/kpi-card";
+import { ShareBars } from "@/components/dashboard/share-bars";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -193,7 +196,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 sm:space-y-6">
       <PageHeader
         title="Dashboard"
         description="Live sales, stock health, and store performance across Fourty."
@@ -203,6 +206,7 @@ export default function DashboardPage() {
             variant="outline"
             onClick={handleExport}
             disabled={!trendRows.length}
+            className="hidden sm:inline-flex"
           >
             <Download data-icon="inline-start" />
             Export trend
@@ -210,12 +214,50 @@ export default function DashboardPage() {
         }
       />
 
-      <GlobalFilters showStore={profile?.role === "owner"} />
+      <div className="-mx-1 overflow-x-auto pb-1 sm:mx-0">
+        <GlobalFilters showStore={profile?.role === "owner"} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 sm:hidden">
+        <Link
+          href="/app/sales/new"
+          className="flex flex-col items-center gap-1.5 rounded-lg border border-border/80 bg-card px-2 py-3 text-center shadow-sm"
+        >
+          <span className="flex size-9 items-center justify-center rounded-full bg-accent/15 text-accent">
+            <Plus className="size-4" />
+          </span>
+          <span className="text-[11px] font-medium">New sale</span>
+        </Link>
+        <Link
+          href={profile?.role === "subagent" ? "/app/subagents" : "/app/restock"}
+          className="flex flex-col items-center gap-1.5 rounded-lg border border-border/80 bg-card px-2 py-3 text-center shadow-sm"
+        >
+          <span className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+            {profile?.role === "subagent" ? (
+              <Truck className="size-4" />
+            ) : (
+              <Boxes className="size-4" />
+            )}
+          </span>
+          <span className="text-[11px] font-medium">
+            {profile?.role === "subagent" ? "Batches" : "Restock"}
+          </span>
+        </Link>
+        <Link
+          href="/app/sales"
+          className="flex flex-col items-center gap-1.5 rounded-lg border border-border/80 bg-card px-2 py-3 text-center shadow-sm"
+        >
+          <span className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
+            <ShoppingBag className="size-4" />
+          </span>
+          <span className="text-[11px] font-medium">History</span>
+        </Link>
+      </div>
 
       {isLoading ? (
         <KpiGrid>
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-[96px] rounded-xl" />
+            <Skeleton key={i} className="h-[108px] rounded-lg" />
           ))}
         </KpiGrid>
       ) : (
@@ -226,12 +268,15 @@ export default function DashboardPage() {
             icon={Wallet}
             trend={data?.revenueChange}
             tone="accent"
+            featured
+            className="xl:col-span-1"
           />
           <KpiCard
             title="Cartons sold"
             value={formatNumber(data?.totalCartonsSold || 0)}
             icon={ShoppingBag}
             trend={data?.salesChange}
+            fill="navySoft"
           />
           <KpiCard
             title="Transactions"
@@ -243,12 +288,13 @@ export default function DashboardPage() {
             value={formatNumber(data?.lowStockCount || 0)}
             icon={AlertTriangle}
             tone={(data?.lowStockCount || 0) > 0 ? "warn" : "success"}
-            hint="Below minimum threshold"
+            hint="Below minimum"
           />
           <KpiCard
             title="Inventory value"
             value={formatCurrency(data?.inventoryValue || 0)}
             icon={Boxes}
+            fill="navySoft"
           />
           <KpiCard
             title="Pending batches"
@@ -265,14 +311,15 @@ export default function DashboardPage() {
             title="Active subagents"
             value={formatNumber(data?.activeSubagents || 0)}
             icon={Users}
+            fill="coral"
           />
         </KpiGrid>
       )}
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <div className="panel p-3 sm:p-4 lg:col-span-3">
-          <div className="mb-3">
-            <h2 className="font-heading text-sm font-semibold">
+        <div className="panel p-4 sm:p-5 lg:col-span-3">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
               Revenue vs cartons
             </h2>
             <p className="text-xs text-muted-foreground">
@@ -281,13 +328,53 @@ export default function DashboardPage() {
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-video w-full rounded-lg" />
+            <Skeleton className="aspect-[16/10] w-full rounded-lg sm:aspect-video" />
           ) : trendRows.length === 0 ? (
-            <div className="flex aspect-video items-center justify-center rounded-lg bg-muted text-sm text-muted-foreground">
+            <div className="flex aspect-[16/10] items-center justify-center rounded-lg bg-muted text-sm text-muted-foreground sm:aspect-video">
               No sales in this period
             </div>
           ) : (
-            <ChartContainer config={trendConfig} className="aspect-video w-full">
+            <>
+              <ChartContainer
+                config={trendConfig}
+                className="aspect-[16/10] w-full md:hidden"
+              >
+                <AreaChart data={trendRows} margin={{ left: 0, right: 4, top: 8 }}>
+                  <defs>
+                    <linearGradient id="fillRevenueMobile" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={chartColors.navy} stopOpacity={0.35} />
+                      <stop offset="95%" stopColor={chartColors.navy} stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    minTickGap={36}
+                    tickFormatter={(v) => formatDate(v, "MMM d")}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(v) => formatDate(String(v))}
+                      />
+                    }
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke={chartColors.navy}
+                    fill="url(#fillRevenueMobile)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ChartContainer>
+              <ChartContainer
+                config={trendConfig}
+                className="hidden aspect-video w-full md:flex"
+              >
               <ComposedChart data={trendRows} margin={{ left: 4, right: 8 }}>
                 <defs>
                   <linearGradient id="fillRevenueDash" x1="0" y1="0" x2="0" y2="1">
@@ -353,47 +440,61 @@ export default function DashboardPage() {
                 <ChartLegend content={<ChartLegendContent />} />
               </ComposedChart>
             </ChartContainer>
+            </>
           )}
         </div>
 
-        <div className="panel p-3 sm:p-4 lg:col-span-2">
-          <div className="mb-3">
-            <h2 className="font-heading text-sm font-semibold">Brand mix</h2>
+        <div className="panel p-4 sm:p-5 lg:col-span-2">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">Brand mix</h2>
             <p className="text-xs text-muted-foreground">
-              Revenue share donut
+              Revenue share by brand
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="aspect-square w-full max-w-[280px] mx-auto rounded-lg" />
+            <Skeleton className="h-40 w-full rounded-lg" />
           ) : brandDonut.length === 0 ? (
-            <div className="flex aspect-square max-w-[280px] mx-auto items-center justify-center rounded-lg bg-muted text-sm text-muted-foreground">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               No brand data
-            </div>
+            </p>
           ) : (
-            <ChartContainer config={pieConfig} className="mx-auto aspect-square max-h-[280px] w-full">
-              <PieChart>
-                <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
-                <Pie
-                  data={brandDonut}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={58}
-                  outerRadius={90}
-                  strokeWidth={2}
-                  paddingAngle={2}
-                >
-                  {brandDonut.map((entry) => (
-                    <Cell key={entry.name} fill={entry.fill} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ChartContainer>
+            <>
+              <ShareBars
+                className="md:hidden"
+                items={brandDonut.map((b) => ({
+                  name: b.name,
+                  value: b.value,
+                  color: b.fill,
+                }))}
+              />
+              <ChartContainer
+                config={pieConfig}
+                className="mx-auto hidden aspect-square max-h-[280px] w-full md:flex"
+              >
+                <PieChart>
+                  <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
+                  <Pie
+                    data={brandDonut}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={58}
+                    outerRadius={90}
+                    strokeWidth={2}
+                    paddingAngle={2}
+                  >
+                    {brandDonut.map((entry) => (
+                      <Cell key={entry.name} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
+            </>
           )}
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="panel p-3 sm:p-4">
+        <div className="panel hidden p-4 sm:p-5 md:block">
           <div className="mb-3">
             <h2 className="font-heading text-sm font-semibold">
               Brand performance
@@ -426,7 +527,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="panel p-3 sm:p-4">
+        <div className="panel hidden p-4 sm:p-5 md:block">
           <div className="mb-3">
             <h2 className="font-heading text-sm font-semibold">
               Store radar
@@ -461,19 +562,39 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="panel p-3 sm:p-4">
-          <div className="mb-3">
-            <h2 className="font-heading text-sm font-semibold">
-              Stock health gauge
+        <div className="panel p-4 sm:p-5">
+          <div className="mb-4">
+            <h2 className="font-heading text-base font-semibold sm:text-sm">
+              Stock health
             </h2>
             <p className="text-xs text-muted-foreground">
               Based on SKUs under minimum
             </p>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[240px] w-full rounded-lg" />
+            <Skeleton className="h-16 w-full rounded-lg" />
           ) : (
-            <ChartContainer config={healthConfig} className="mx-auto h-[240px] w-full">
+            <>
+              <div className="md:hidden">
+                <div className="flex items-end justify-between gap-3">
+                  <p className="font-figure text-3xl font-semibold tracking-tight">
+                    {stockHealth[0]?.value ?? 0}%
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatNumber(data?.lowStockCount || 0)} SKUs low
+                  </p>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-accent"
+                    style={{ width: `${stockHealth[0]?.value ?? 0}%` }}
+                  />
+                </div>
+              </div>
+              <ChartContainer
+                config={healthConfig}
+                className="mx-auto hidden h-[240px] w-full md:flex"
+              >
               <RadialBarChart
                 data={stockHealth}
                 startAngle={180}
@@ -498,11 +619,12 @@ export default function DashboardPage() {
                 </text>
               </RadialBarChart>
             </ChartContainer>
+            </>
           )}
         </div>
       </div>
 
-      <div className="panel space-y-3 p-3 sm:p-4">
+      <div className="panel space-y-4 p-4 sm:p-5">
         <div>
           <h2 className="font-heading text-sm font-semibold">By store</h2>
           <p className="text-xs text-muted-foreground">
@@ -571,8 +693,9 @@ export default function DashboardPage() {
                   <MobileRowCard
                     key={row.name}
                     onClick={() => setDetailsStore(row)}
+                    title={row.name}
+                    trailing={formatCurrency(row.revenue)}
                     fields={[
-                      { label: "Store", value: row.name },
                       {
                         label: "Share",
                         value: `${share.toFixed(1)}%`,
@@ -580,10 +703,6 @@ export default function DashboardPage() {
                       {
                         label: "Cartons",
                         value: formatNumber(row.cartons),
-                      },
-                      {
-                        label: "Revenue",
-                        value: formatCurrency(row.revenue),
                       },
                     ]}
                   />

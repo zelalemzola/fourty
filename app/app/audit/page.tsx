@@ -177,6 +177,7 @@ export default function AuditPage() {
           title="Unique actors"
           value={formatNumber(kpis.actors)}
           icon={Users}
+          fill="navySoft"
         />
         <KpiCard
           title="Today"
@@ -232,8 +233,9 @@ export default function AuditPage() {
                 <MobileRowCard
                   key={row.id}
                   onClick={() => setDetailsLog(row)}
+                  title={row.action}
+                  trailing={formatDateTime(row.created_at)}
                   fields={[
-                    { label: "Action", value: row.action },
                     {
                       label: "Entity",
                       value: (
@@ -243,11 +245,6 @@ export default function AuditPage() {
                     {
                       label: "Actor",
                       value: row.actor_name || "System",
-                    },
-                    {
-                      label: "When",
-                      value: formatDateTime(row.created_at),
-                      fullWidth: true,
                     },
                   ]}
                   actions={<RowActions actions={auditActions(row)} />}

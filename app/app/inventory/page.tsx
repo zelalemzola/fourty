@@ -310,7 +310,7 @@ export default function InventoryPage() {
                 Set min stock
               </Button>
             )}
-            <Button variant="outline" onClick={handleExport}>
+            <Button variant="outline" onClick={handleExport} className="hidden sm:inline-flex">
               <Download className="size-4" />
               Export
             </Button>
@@ -322,16 +322,18 @@ export default function InventoryPage() {
 
       <KpiGrid>
         <KpiCard
-          title="SKUs"
-          value={formatNumber(kpis.skus)}
-          icon={Layers}
-          hint="Distinct brands in view"
-        />
-        <KpiCard
           title="Total cartons"
           value={formatNumber(kpis.totalCartons)}
           icon={Boxes}
           tone="accent"
+          featured
+        />
+        <KpiCard
+          title="SKUs"
+          value={formatNumber(kpis.skus)}
+          icon={Layers}
+          hint="Distinct brands in view"
+          fill="navySoft"
         />
         <KpiCard
           title="Low stock"
@@ -349,7 +351,7 @@ export default function InventoryPage() {
         />
       </KpiGrid>
 
-      <div className="panel p-3 sm:p-4">
+      <div className="panel p-4 sm:p-5">
         <div className="mb-4">
           <h2 className="text-sm font-semibold">Stock levels</h2>
           <p className="text-xs text-muted-foreground">
@@ -494,20 +496,17 @@ export default function InventoryPage() {
           </div>
         ) : (
           <>
-            <ul className="space-y-2 md:hidden">
+            <ul className="space-y-3 md:hidden">
               {pager.pageItems.map((row) => {
                 const low = row.quantity <= row.min_stock;
                 return (
                   <MobileRowCard
                     key={row.id}
                     onClick={() => setDetailsRow(row)}
+                    title={row.brands?.name || "—"}
+                    trailing={formatNumber(row.quantity)}
                     fields={[
-                      { label: "Brand", value: row.brands?.name || "—" },
                       { label: "Store", value: row.stores?.name || "—" },
-                      {
-                        label: "Qty",
-                        value: formatNumber(row.quantity),
-                      },
                       {
                         label: "Status",
                         value: low ? (

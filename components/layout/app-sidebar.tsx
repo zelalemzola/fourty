@@ -2,32 +2,21 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  Warehouse,
-  Store,
-  Cigarette,
-  Users,
-  UserCog,
-  FileBarChart2,
-  Shield,
-  Bell,
-  Settings,
-  LogOut,
-  ClipboardCheck,
-  SlidersHorizontal,
-  Banknote,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { clearAuth } from "@/store/slices/authSlice";
 import type { RootState } from "@/store";
-import type { UserRole } from "@/types/database";
 import { ModeToggle } from "@/components/ModeToggle";
 import { useGetNotificationsQuery } from "@/store/api/fourtyApi";
+import {
+  catalogNav,
+  insightNav,
+  mainNav,
+  navLabelForRole,
+  type NavItem,
+} from "@/components/layout/nav-config";
 import {
   Sidebar,
   SidebarContent,
@@ -41,124 +30,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
-
-type NavItem = {
-  href: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  roles: UserRole[];
-};
-
-const mainNav: NavItem[] = [
-  {
-    href: "/app/dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    roles: ["owner", "storekeeper", "subagent"],
-  },
-  {
-    href: "/app/inventory",
-    label: "Inventory",
-    icon: Package,
-    roles: ["owner", "storekeeper"],
-  },
-  {
-    href: "/app/sales",
-    label: "Sales",
-    icon: ShoppingCart,
-    roles: ["owner", "storekeeper", "subagent"],
-  },
-  {
-    href: "/app/restock",
-    label: "Restock",
-    icon: Warehouse,
-    roles: ["owner", "storekeeper"],
-  },
-  {
-    href: "/app/closeout",
-    label: "Daily closeout",
-    icon: ClipboardCheck,
-    roles: ["owner", "storekeeper"],
-  },
-  {
-    href: "/app/adjustments",
-    label: "Adjustments",
-    icon: SlidersHorizontal,
-    roles: ["owner", "storekeeper"],
-  },
-  {
-    href: "/app/remittances",
-    label: "Remittances",
-    icon: Banknote,
-    roles: ["owner", "storekeeper", "subagent"],
-  },
-];
-
-const catalogNav: NavItem[] = [
-  {
-    href: "/app/stores",
-    label: "Stores",
-    icon: Store,
-    roles: ["owner"],
-  },
-  {
-    href: "/app/brands",
-    label: "Brands",
-    icon: Cigarette,
-    roles: ["owner"],
-  },
-  {
-    href: "/app/subagents",
-    label: "Subagents",
-    icon: Users,
-    roles: ["owner", "storekeeper", "subagent"],
-  },
-  {
-    href: "/app/users",
-    label: "Team",
-    icon: UserCog,
-    roles: ["owner"],
-  },
-];
-
-const insightNav: NavItem[] = [
-  {
-    href: "/app/reports",
-    label: "Reports",
-    icon: FileBarChart2,
-    roles: ["owner", "storekeeper"],
-  },
-  {
-    href: "/app/audit",
-    label: "Audit trail",
-    icon: Shield,
-    roles: ["owner"],
-  },
-  {
-    href: "/app/notifications",
-    label: "Notifications",
-    icon: Bell,
-    roles: ["owner", "storekeeper", "subagent"],
-  },
-  {
-    href: "/app/settings",
-    label: "Settings",
-    icon: Settings,
-    roles: ["owner", "storekeeper", "subagent"],
-  },
-];
 
 function NavGroup({
   label,
   items,
   unread,
+  role,
 }: {
   label: string;
   items: NavItem[];
   unread: number;
+  role: "owner" | "storekeeper" | "subagent";
 }) {
   const pathname = usePathname();
   if (!items.length) return null;
@@ -183,7 +67,7 @@ function NavGroup({
                   render={<Link href={item.href} />}
                 >
                   <Icon className="size-4" />
-                  <span className="font-sans">{item.label}</span>
+                  <span className="font-sans">{navLabelForRole(item, role)}</span>
                 </SidebarMenuButton>
                 {item.href === "/app/notifications" && unread > 0 && (
                   <SidebarMenuBadge className="font-mono">
@@ -248,9 +132,9 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavGroup label="Operations" items={filter(mainNav)} unread={unread} />
-        <NavGroup label="Organization" items={filter(catalogNav)} unread={unread} />
-        <NavGroup label="Insights" items={filter(insightNav)} unread={unread} />
+        <NavGroup label="Operations" items={filter(mainNav)} unread={unread} role={role} />
+        <NavGroup label="Organization" items={filter(catalogNav)} unread={unread} role={role} />
+        <NavGroup label="Insights" items={filter(insightNav)} unread={unread} role={role} />
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border font-sans">

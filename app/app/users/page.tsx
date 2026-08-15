@@ -388,6 +388,7 @@ export default function UsersPage() {
           title="Team size"
           value={formatNumber(kpis.total)}
           icon={Users}
+          fill="navySoft"
         />
         <KpiCard
           title="Active"
@@ -461,13 +462,10 @@ export default function UsersPage() {
                 <MobileRowCard
                   key={u.id}
                   onClick={() => setDetailsUser(u)}
+                  title={u.full_name}
+                  trailing={u.role}
                   fields={[
-                    { label: "Name", value: u.full_name },
                     { label: "Email", value: u.email },
-                    {
-                      label: "Role",
-                      value: <Badge variant="outline">{u.role}</Badge>,
-                    },
                     {
                       label: "Status",
                       value: (

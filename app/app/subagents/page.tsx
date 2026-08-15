@@ -431,22 +431,25 @@ export default function SubagentsPage() {
       {canIssue && <GlobalFilters showDate={false} showStore={isOwner} />}
 
       <KpiGrid cols={5}>
-        <KpiCard
+          <KpiCard
           title="Active batches"
           value={formatNumber(kpis.active)}
           icon={Truck}
           tone="accent"
+          featured
         />
         <KpiCard
           title="In hand"
           value={formatNumber(kpis.inHand)}
           icon={Boxes}
           hint="Cartons with subagents"
+          fill="navySoft"
         />
         <KpiCard
           title="Sold"
           value={formatNumber(kpis.sold)}
           icon={ShoppingBag}
+          fill="coral"
         />
         <KpiCard
           title="Returned"
@@ -465,7 +468,7 @@ export default function SubagentsPage() {
       {canIssue && (
         <form
           onSubmit={submitIssue}
-          className="panel space-y-4 p-3 sm:p-4"
+          className="panel space-y-4 p-4 sm:p-5"
         >
           <div>
             <h2 className="text-sm font-semibold">Issue batch</h2>
@@ -608,13 +611,10 @@ export default function SubagentsPage() {
                   <MobileRowCard
                     key={s.id}
                     onClick={() => setDetailsRoster(s)}
+                    title={s.name}
+                    trailing={formatNumber(s.inHand)}
                     fields={[
-                      { label: "Name", value: s.name },
                       { label: "Store", value: s.store },
-                      {
-                        label: "In hand",
-                        value: formatNumber(s.inHand),
-                      },
                       {
                         label: "Active",
                         value: formatNumber(s.activeBatches),
@@ -753,8 +753,9 @@ export default function SubagentsPage() {
                   <MobileRowCard
                     key={b.id}
                     onClick={() => setDetailsBatch(b)}
+                    title={b.brands?.name || "—"}
+                    trailing={formatNumber(b.quantity_in_hand)}
                     fields={[
-                      { label: "Brand", value: b.brands?.name || "—" },
                       {
                         label: "Status",
                         value: (
@@ -762,10 +763,6 @@ export default function SubagentsPage() {
                             {stale ? "stale" : b.status}
                           </Badge>
                         ),
-                      },
-                      {
-                        label: "In hand",
-                        value: formatNumber(b.quantity_in_hand),
                       },
                       {
                         label: "Taken",

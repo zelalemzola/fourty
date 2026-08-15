@@ -271,6 +271,7 @@ export default function BrandsPage() {
           title="Total brands"
           value={formatNumber(kpis.total)}
           icon={Package}
+          fill="navySoft"
         />
         <KpiCard
           title="Active"
@@ -330,13 +331,10 @@ export default function BrandsPage() {
                 <MobileRowCard
                   key={brand.id}
                   onClick={() => setDetailsBrand(brand)}
+                  title={brand.name}
+                  trailing={formatCurrency(brand.unit_price)}
                   fields={[
-                    { label: "Name", value: brand.name },
                     { label: "SKU", value: brand.sku || "—" },
-                    {
-                      label: "Unit price",
-                      value: formatCurrency(brand.unit_price),
-                    },
                     {
                       label: "Status",
                       value: (

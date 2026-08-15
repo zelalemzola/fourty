@@ -219,12 +219,12 @@ export default function RemittancesPage() {
       <GlobalFilters showDate={false} />
 
       <KpiGrid cols={3}>
-        <KpiCard title="Total records" value={formatNumber(remittances.length)} icon={Banknote} />
+        <KpiCard title="Confirmed amount" value={formatCurrency(confirmedAmt)} icon={Banknote} tone="success" featured />
         <KpiCard title="Pending review" value={formatNumber(pending.length)} icon={Banknote} tone="warn" />
-        <KpiCard title="Confirmed amount" value={formatCurrency(confirmedAmt)} icon={Banknote} tone="success" />
+        <KpiCard title="Total records" value={formatNumber(remittances.length)} icon={Banknote} fill="navySoft" />
       </KpiGrid>
 
-      <form onSubmit={onSubmit} className="panel grid gap-3 p-3 sm:p-4 md:grid-cols-2">
+      <form onSubmit={onSubmit} className="panel grid gap-3 p-4 sm:p-5 md:grid-cols-2">
         <p className="text-sm font-semibold md:col-span-2">Submit remittance</p>
 
         {isOwner && (
@@ -374,19 +374,16 @@ export default function RemittancesPage() {
                 </TableBody>
               </Table>
             </div>
-            <ul className="space-y-2 md:hidden">
+            <ul className="space-y-3 md:hidden">
               {pager.pageItems.map((r) => {
                 const actions = remittanceActions(r);
                 return (
                   <MobileRowCard
                     key={r.id}
                     onClick={() => setDetailsRemittance(r)}
+                    title={r.stores?.name || "Remittance"}
+                    trailing={formatCurrency(Number(r.amount))}
                     fields={[
-                      {
-                        label: "Amount",
-                        value: formatCurrency(Number(r.amount)),
-                      },
-                      { label: "Store", value: r.stores?.name || "—" },
                       {
                         label: "Method",
                         value: (

@@ -108,6 +108,7 @@ export default function NotificationsPage() {
           title="Read"
           value={formatNumber(kpis.read)}
           icon={MailOpen}
+          fill="navySoft"
         />
         <KpiCard
           title="Total"
@@ -119,6 +120,7 @@ export default function NotificationsPage() {
           value={formatNumber(kpis.types)}
           icon={Bell}
           hint="Distinct alert categories"
+          fill="coral"
         />
       </KpiGrid>
 
@@ -164,8 +166,9 @@ export default function NotificationsPage() {
                     setDetailsNotif(n);
                     if (!n.is_read) void markOne(n.id);
                   }}
+                  title={n.title}
+                  trailing={formatRelative(n.created_at)}
                   fields={[
-                    { label: "Title", value: n.title },
                     {
                       label: "Type",
                       value: (
@@ -178,10 +181,6 @@ export default function NotificationsPage() {
                       label: "Body",
                       value: n.body,
                       fullWidth: true,
-                    },
-                    {
-                      label: "When",
-                      value: formatRelative(n.created_at),
                     },
                   ]}
                   actions={

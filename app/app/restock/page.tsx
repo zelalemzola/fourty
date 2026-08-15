@@ -235,6 +235,13 @@ export default function RestockPage() {
       ) : (
         <KpiGrid>
           <KpiCard
+            title="Restock value"
+            value={formatCurrency(kpis.value)}
+            icon={Wallet}
+            tone="accent"
+            featured
+          />
+          <KpiCard
             title="Cartons in"
             value={formatNumber(kpis.cartons)}
             icon={Boxes}
@@ -242,20 +249,16 @@ export default function RestockPage() {
             hint={isFetching ? "Refreshing…" : undefined}
           />
           <KpiCard
-            title="Restock value"
-            value={formatCurrency(kpis.value)}
-            icon={Wallet}
-            tone="accent"
-          />
-          <KpiCard
             title="Events"
             value={formatNumber(kpis.events)}
             icon={Hash}
+            fill="navySoft"
           />
           <KpiCard
             title="Avg unit cost"
             value={formatCurrency(kpis.avgCost)}
             icon={PackagePlus}
+            fill="coral"
           />
         </KpiGrid>
       )}
@@ -445,17 +448,14 @@ export default function RestockPage() {
                 </Table>
               </div>
 
-              <ul className="space-y-2 md:hidden">
+              <ul className="space-y-3 md:hidden">
                 {pager.pageItems.map((r) => (
                   <MobileRowCard
                     key={r.id}
                     onClick={() => setDetailsRestock(r)}
+                    title={r.brands?.name || "—"}
+                    trailing={`+${formatNumber(r.quantity)}`}
                     fields={[
-                      { label: "Brand", value: r.brands?.name || "—" },
-                      {
-                        label: "Qty",
-                        value: `+${formatNumber(r.quantity)}`,
-                      },
                       {
                         label: "Cost",
                         value: formatCurrency(Number(r.unit_cost || 0)),

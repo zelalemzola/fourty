@@ -242,6 +242,7 @@ export default function StoresPage() {
           title="Total stores"
           value={formatNumber(kpis.total)}
           icon={Building2}
+          fill="navySoft"
         />
         <KpiCard
           title="Active"
@@ -301,9 +302,9 @@ export default function StoresPage() {
                 <MobileRowCard
                   key={store.id}
                   onClick={() => setDetailsStore(store)}
+                  title={store.name}
+                  trailing={store.code}
                   fields={[
-                    { label: "Name", value: store.name },
-                    { label: "Code", value: store.code },
                     { label: "City", value: store.city || "—" },
                     {
                       label: "Status",
