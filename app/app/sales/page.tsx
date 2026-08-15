@@ -425,9 +425,9 @@ export default function SalesPage() {
             <>
               <ChartContainer
                 config={channelConfig}
-                className="mx-auto aspect-square max-h-[220px] w-full sm:max-h-[240px]"
+                className="mx-auto h-[168px] w-full max-w-[200px] sm:h-[240px] sm:max-h-[240px] sm:max-w-[240px]"
               >
-                <PieChart>
+                <PieChart margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
                   <ChartTooltip
                     content={
                       <ChartTooltipContent
@@ -439,8 +439,10 @@ export default function SalesPage() {
                     data={channelMix}
                     dataKey="value"
                     nameKey="name"
-                    innerRadius={48}
-                    outerRadius={78}
+                    cx="50%"
+                    cy="46%"
+                    innerRadius="52%"
+                    outerRadius="78%"
                     paddingAngle={3}
                   >
                     {channelMix.map((_, i) => (

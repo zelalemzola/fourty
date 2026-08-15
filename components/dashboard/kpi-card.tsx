@@ -18,7 +18,7 @@ export function KpiGrid({
   return (
     <div
       className={cn(
-        "grid min-w-0 grid-cols-2 gap-2.5 sm:gap-4",
+        "grid min-w-0 grid-cols-2 gap-2.5 pt-2 sm:gap-4 sm:pt-0",
         cols === 3 && "lg:grid-cols-3",
         cols === 4 && "xl:grid-cols-4",
         cols === 5 && "xl:grid-cols-5",
@@ -148,7 +148,7 @@ export function KpiCard({
         "dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_6px_16px_rgba(0,0,0,0.28)]",
         fills[fill],
         featured &&
-          "col-span-2 flex min-h-[11.5rem] flex-col py-6 shadow-[0_4px_10px_rgba(15,23,42,0.08),0_14px_32px_rgba(194,65,12,0.22)] xl:col-span-1 dark:shadow-[0_4px_10px_rgba(0,0,0,0.35),0_14px_32px_rgba(0,0,0,0.5)] sm:block sm:min-h-0 sm:py-4 sm:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_6px_16px_rgba(15,23,42,0.05)] sm:dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_6px_16px_rgba(0,0,0,0.28)]",
+          "col-span-2 mt-2 flex min-h-[11.5rem] flex-col py-6 shadow-[0_4px_10px_rgba(15,23,42,0.08),0_14px_32px_rgba(194,65,12,0.22)] xl:col-span-1 dark:shadow-[0_4px_10px_rgba(0,0,0,0.35),0_14px_32px_rgba(0,0,0,0.5)] sm:mt-0 sm:block sm:min-h-0 sm:py-4 sm:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_6px_16px_rgba(15,23,42,0.05)] sm:dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_6px_16px_rgba(0,0,0,0.28)]",
         className
       )}
     >

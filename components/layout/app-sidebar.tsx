@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { clearAuth } from "@/store/slices/authSlice";
 import type { RootState } from "@/store";
-import { ModeToggle } from "@/components/ModeToggle";
 import { useGetNotificationsQuery } from "@/store/api/fourtyApi";
 import {
   catalogNav,
@@ -139,11 +138,11 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border font-sans">
         {!collapsed && (
-          <div className="px-2 py-1.5 text-xs text-sidebar-foreground/70">
+          <div className="mx-1 mb-1 rounded-lg bg-sidebar-accent/60 px-2.5 py-2">
             <p className="truncate font-heading text-sm font-semibold text-sidebar-foreground">
               {profile?.full_name || "…"}
             </p>
-            <p className="truncate font-sans capitalize">
+            <p className="truncate text-[11px] capitalize text-sidebar-foreground/65">
               {role}
               {profile?.stores?.name ? ` · ${profile.stores.name}` : ""}
             </p>
@@ -151,21 +150,15 @@ export function AppSidebar() {
         )}
         <SidebarMenu>
           <SidebarMenuItem>
-            <div className={collapsed ? "flex justify-center px-1" : "px-1"}>
-              <ModeToggle
-                collapsed={collapsed}
-                className="border-sidebar-border bg-transparent font-sans"
-              />
-            </div>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Sign out"
-              className="font-sans"
               onClick={logout}
+              className="border border-transparent bg-sidebar-primary font-sans text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground active:bg-sidebar-primary/80 active:text-sidebar-primary-foreground"
             >
-              <LogOut className="size-4" />
-              <span className="font-sans">Sign out</span>
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-sidebar-primary-foreground/15">
+                <LogOut className="size-3.5" />
+              </span>
+              <span className="font-medium">Sign out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
