@@ -47,12 +47,12 @@ function NavGroup({
   if (!items.length) return null;
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel className="font-heading text-[11px] font-semibold tracking-wide uppercase">
+    <SidebarGroup className="max-md:px-2">
+      <SidebarGroupLabel className="font-heading text-[11px] font-semibold tracking-wide uppercase max-md:mb-1 max-md:px-2 max-md:font-nav max-md:text-[11px] max-md:font-medium max-md:tracking-[0.12em]">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>
-        <SidebarMenu>
+        <SidebarMenu className="max-md:gap-1">
           {items.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(item.href + "/");
@@ -62,14 +62,16 @@ function NavGroup({
                 <SidebarMenuButton
                   isActive={active}
                   tooltip={item.label}
-                  className="font-sans"
+                  className="font-sans max-md:h-12 max-md:gap-3 max-md:rounded-xl max-md:px-3 max-md:font-nav max-md:text-[15px] max-md:font-normal max-md:[&_svg]:size-5"
                   render={<Link href={item.href} />}
                 >
                   <Icon className="size-4" />
-                  <span className="font-sans">{navLabelForRole(item, role)}</span>
+                  <span className="font-sans max-md:font-nav max-md:font-normal">
+                    {navLabelForRole(item, role)}
+                  </span>
                 </SidebarMenuButton>
                 {item.href === "/app/notifications" && unread > 0 && (
-                  <SidebarMenuBadge className="font-mono">
+                  <SidebarMenuBadge className="font-mono max-md:text-xs">
                     {unread}
                   </SidebarMenuBadge>
                 )}
@@ -104,24 +106,24 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar" className="font-sans">
-      <SidebarHeader className="border-b border-sidebar-border">
+    <Sidebar collapsible="icon" variant="sidebar" className="font-sans max-md:font-nav">
+      <SidebarHeader className="border-b border-sidebar-border max-md:px-3 max-md:py-3">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
               tooltip="Fourty"
-              className="font-sans"
+              className="font-sans max-md:h-14 max-md:gap-3 max-md:rounded-xl max-md:px-2"
               render={<Link href="/app/dashboard" />}
             >
-              <div className="flex size-8 items-center justify-center rounded-md bg-sidebar-primary font-heading text-sm font-bold text-sidebar-primary-foreground">
+              <div className="flex size-8 items-center justify-center rounded-md bg-sidebar-primary font-heading text-sm font-bold text-sidebar-primary-foreground max-md:size-10 max-md:text-base">
                 40
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-heading text-base font-semibold tracking-tight">
+                <span className="truncate font-heading text-base font-semibold tracking-tight max-md:font-nav max-md:text-[17px] max-md:font-medium">
                   Fourty
                 </span>
-                <span className="truncate font-sans text-xs text-sidebar-foreground/70">
+                <span className="truncate font-sans text-xs text-sidebar-foreground/70 max-md:font-nav max-md:text-[12px] max-md:font-normal">
                   Inventory & Sales
                 </span>
               </div>
@@ -138,11 +140,11 @@ export function AppSidebar() {
 
       <SidebarFooter className="overflow-visible border-t border-sidebar-border px-3 pt-3 pb-3 font-sans group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:py-2 max-md:pb-[calc(2.75rem+env(safe-area-inset-bottom,0px))]">
         {!collapsed && (
-          <div className="mb-1.5 rounded-lg bg-sidebar-accent/60 px-3 py-2">
-            <p className="truncate font-heading text-sm font-semibold text-sidebar-foreground">
+          <div className="mb-1.5 rounded-lg bg-sidebar-accent/60 px-3 py-2 max-md:px-3.5 max-md:py-2.5">
+            <p className="truncate font-heading text-sm font-semibold text-sidebar-foreground max-md:font-nav max-md:text-[15px] max-md:font-medium">
               {profile?.full_name || "…"}
             </p>
-            <p className="truncate text-[11px] capitalize text-sidebar-foreground/65">
+            <p className="truncate text-[11px] capitalize text-sidebar-foreground/65 max-md:font-nav max-md:text-[12px] max-md:font-normal">
               {role}
               {profile?.stores?.name ? ` · ${profile.stores.name}` : ""}
             </p>
@@ -153,7 +155,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               tooltip="Sign out"
               onClick={logout}
-              className="h-9 overflow-visible px-3 font-sans bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground active:bg-sidebar-primary/80 active:text-sidebar-primary-foreground"
+              className="h-9 overflow-visible px-3 font-sans bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground active:bg-sidebar-primary/80 active:text-sidebar-primary-foreground max-md:h-12 max-md:rounded-xl max-md:font-nav max-md:text-[15px] max-md:font-medium max-md:[&_svg]:size-5"
             >
               <LogOut className="size-4" />
               <span className="font-medium">Sign out</span>
